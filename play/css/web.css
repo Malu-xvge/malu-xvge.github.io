@@ -1,0 +1,54 @@
+/* Web / iOS overrides. Not used by the Android app. */
+
+/* iOS Safari treats 100vh as the height without its toolbars, which makes the
+   page taller than the screen. dvh follows the real visible area. */
+body { min-height: 100dvh; }
+
+/* A fixed background repaints badly on iOS and fights the scroll container. */
+body { background-attachment: scroll; }
+
+/* No rubber-band page bounce / pull-to-refresh over the game. */
+html, body { overscroll-behavior-y: none; }
+
+/* Kill the 300ms double-tap zoom delay on every tap target. */
+button, .deck-card, .optionBtn, .backBtn, .settings-fab, .info-fab,
+.charades-buttons button, .howto-next, .unlock-secondary, .charades-finish {
+  touch-action: manipulation;
+}
+
+/* iOS does not allow locking screen orientation, so on a phone held upright the
+   charades card is taller and narrower. Keep the word readable rather than
+   pretending to be landscape. */
+@media (orientation: portrait) {
+  #charadesScreen.charades-fullscreen.active { padding: 1rem; }
+  #charadesScreen.charades-fullscreen .charades-wordbox { min-height: 34vh; }
+  #charadesScreen.charades-fullscreen .charades-hint { font-size: 0.78rem; line-height: 1.4; }
+  #charadesScreen.charades-fullscreen .charades-buttons button { min-height: 56px; }
+}
+
+/* The iPhone notch sits on the side in landscape; the Android WebView never
+   reported it. Keep the timer and Finish button clear of it. */
+.charades-content {
+  padding-top: max(0.9rem, env(safe-area-inset-top, 0px));
+  padding-left: max(1.2rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1.2rem, env(safe-area-inset-right, 0px));
+}
+
+/* The "add to home screen" hint, shown once in Safari. */
+#installHint {
+  position: fixed;
+  left: 0.8rem; right: 0.8rem;
+  bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  z-index: 500;
+  display: flex; gap: 0.7rem; align-items: flex-start;
+  background: #17140f; border: 1px solid rgba(230, 188, 85, 0.35);
+  border-radius: 16px; padding: 0.85rem 1rem;
+  font-size: 0.85rem; line-height: 1.45; color: #f4ecd8;
+  box-shadow: 0 18px 40px -20px #000;
+}
+#installHint[hidden] { display: none; }
+#installHint b { color: #ffd76a; }
+#installHint button {
+  background: none; border: 0; color: #ffd76a;
+  font-size: 1.1rem; line-height: 1; padding: 0 0.2rem;
+}

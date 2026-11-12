@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0b">
+  <meta name="description" content="Trivia, charades and dares rooted in Malawian culture.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GameNight">
+  <title>GameNight</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0b'/%3E%3Ctext x='32' y='46' font-family='system-ui,sans-serif' font-size='38' font-weight='800' text-anchor='middle' fill='%23FFD76A'%3EG%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/web.css">
+  <script>try { if (localStorage.getItem('gn_intro') !== '1') document.documentElement.classList.add('intro-pending'); } catch (e) {}</script>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+  <script src="pwa.js" defer></script>
+</head>
+<body>
+
+  <main id="app">
+
+    <section id="homeScreen" class="screen active">
+      <div class="home-stage">
+        <div class="home-title-block">
+          <span class="hero-eyebrow">Warm Heart of Africa</span>
+          <h2 id="appTitle">GameNight</h2>
+          <p class="hero-tagline">Trivia, charades &amp; dares rooted in Malawian culture</p>
+          <p class="choose-label">Choose a Game</p>
+        </div>
+
+        <div class="deck-grid home-tiles">
+          <div class="deck-card mode-trivia" id="startTriviaBtn">
+            <img class="tile-icon" src="assets/img/icon-trivia.png" alt="">
+            <span class="deck-title">Trivia</span>
+          </div>
+          <div class="deck-card mode-charades" id="startCharadesBtn">
+            <img class="tile-icon" src="assets/img/icon-charades.png" alt="">
+            <span class="deck-title">Charades</span>
+          </div>
+          <div class="deck-card mode-ndagi" id="startNdagiBtn">
+            <img class="tile-icon" src="assets/img/icon-ndagi.png" alt="">
+            <span class="deck-title">Ndagi</span>
+          </div>
+          <div class="deck-card mode-dares" id="startDaresBtn">
+            <img class="tile-icon" src="assets/img/icon-dares.png" alt="">
+            <span class="deck-title">Dares</span>
+          </div>
+          <div class="deck-card mode-quick" id="startQuickBtn">
+            <img class="tile-icon" src="assets/img/icon-quick.png" alt="">
+            <span class="deck-title">Quick Challenge</span>
+          </div>
+          <div class="deck-card mode-apandipati" id="startApaBtn">
+            <span class="tile-lock">🔒</span>
+            <img class="tile-icon" src="assets/img/icon-apa.png" alt="">
+            <span class="deck-title">Apa Ndipati</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="categoryScreen" class="screen">
+      <h2>Choose a Category</h2>
+      <div class="category-list"></div>
+      <button class="backBtn">Back</button>
+    </section>
+
+    <section id="triviaScreen" class="screen">
+      <h2>Trivia</h2>
+      <p>Trivia engine goes here.</p>
+      <button class="backBtn">Back</button>
+    </section>
+
+    <section id="charadesScreen" class="screen">
+      <h2>Charades</h2>
+      <p>Charades engine goes here.</p>
+      <button class="backBtn">Back</button>
+    </section>
+
+    <section id="daresScreen" class="screen">
+      <h2>Dares</h2>
+      <p>Dares engine goes here.</p>
+      <button class="backBtn">Back</button>
+    </section>
+
+    <section id="quickScreen" class="screen">
+      <h2>Quick Challenge</h2>
+      <p>Quick Challenge engine goes here.</p>
+      <button class="backBtn">Back</button>
+    </section>
+
+    <section id="ndagiScreen" class="screen">
+      <h2>Ndagi</h2>
+      <p>Ndagi engine goes here.</p>
+      <button class="backBtn">Back</button>
+    </section>
+
+    <section id="apaScreen" class="screen">
+      <h2>📍 Apa Ndipati</h2>
+    </section>
+
+    <section id="settingsScreen" class="screen">
+      <h2>Settings</h2>
+      <div class="settings-group">
+        <div class="settings-row">
+          <span>Sound Effects</span>
+          <button id="soundToggleBtn" class="toggle-btn">ON</button>
+        </div>
+        <div class="settings-row">
+          <span>Music</span>
+          <button id="musicToggleBtn" class="toggle-btn">ON</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <p class="section-label">Charades Timer</p>
+        <div class="timer-stepper">
+          <button id="charadesTimerMinus">−</button>
+          <span id="charadesTimerValue">60s</span>
+          <button id="charadesTimerPlus">+</button>
+        </div>
+        <p class="section-label">Quick Challenge Timer</p>
+        <div class="timer-stepper">
+          <button id="quickTimerMinus">−</button>
+          <span id="quickTimerValue">45s</span>
+          <button id="quickTimerPlus">+</button>
+        </div>
+      </div>
+      <div class="settings-group points-group">
+        <p class="section-label">Points</p>
+        <div class="points-balance"><span class="points-star">⭐</span><span id="pointsBalance">0</span></div>
+        <p class="points-hint">Earn points with right answers in Trivia, Ndagi, Quick Challenge and Apa Ndipati. Spend them to unlock new categories.</p>
+        <button id="unlockAllBtn" class="howto-next">Unlock everything for MK 2,000</button>
+        <p class="points-hint">One payment unlocks every category and Apa Ndipati — cheaper than buying categories one by one.</p>
+        <p id="unlockAllNote" class="unlock-note"></p>
+      </div>
+      <div class="settings-group">
+        <p class="section-label">Intro</p>
+        <button id="replayIntroBtn" class="howto-next">Watch the intro again</button>
+      </div>
+      <button class="backBtn">Back</button>
+    </section>
+
+  </main>
+
+  <div id="versionModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <p class="modal-text">Wandering Cadet</p>
+      <button id="closeModalBtn">Close</button>
+    </div>
+  </div>
+
+  <button id="settingsFabBtn" class="settings-fab">⚙️</button>
+  <button id="infoFabBtn" class="info-fab" aria-label="How to play">i</button>
+
+  <div id="introOverlay" class="intro-overlay">
+    <div class="intro-splash">
+      <div id="introCircle" class="intro-circle"></div>
+      <h1 class="intro-brand">GAMENIGHT</h1>
+      <p class="intro-tag">Warm Heart of Africa</p>
+    </div>
+    <div class="intro-slides">
+      <button id="introSkipBtn" class="intro-skip">Skip</button>
+      <div id="introArt" class="intro-art"></div>
+      <h2 id="introTitle" class="intro-title"></h2>
+      <p id="introText" class="intro-text"></p>
+      <div id="introDots" class="howto-dots"></div>
+      <button id="introNextBtn" class="howto-next intro-next">Next</button>
+    </div>
+  </div>
+
+  <div id="pauseOverlay" class="pause-overlay">
+    <button id="pauseResumeBtn" class="pause-btn" aria-label="Resume">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+    </button>
+    <button id="pauseHomeBtn" class="pause-btn" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z" fill="currentColor"/></svg>
+    </button>
+  </div>
+
+  <div id="unlockOverlay" class="howto-overlay">
+    <div class="howto-sheet unlock-sheet" role="dialog" aria-modal="true" aria-labelledby="unlockTitle">
+      <div class="unlock-lock">🔒</div>
+      <h3 id="unlockTitle" class="howto-title"></h3>
+      <div id="unlockSample" class="unlock-sample"></div>
+      <div id="unlockBody"></div>
+      <button id="unlockCloseBtn" class="unlock-close">Not now</button>
+    </div>
+  </div>
+
+  <div id="howtoOverlay" class="howto-overlay">
+    <div class="howto-sheet" role="dialog" aria-modal="true" aria-labelledby="howtoTitle">
+      <h3 id="howtoTitle" class="howto-title"></h3>
+      <p id="howtoText" class="howto-text"></p>
+      <div id="howtoArt" class="howto-art"></div>
+      <div id="howtoDots" class="howto-dots"></div>
+      <button id="howtoNextBtn" class="howto-next">Next</button>
+    </div>
+  </div>
+
+  <script src="js/ndagi.js"></script>
+  <script src="js/ndagi-extra.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/quickchallenge.js"></script>
+  <script src="js/dares.js"></script>
+  <script src="js/charades.js"></script>
+  <script src="js/charades-extra.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/audit-fixes.js"></script>
+  <script src="js/apa.js"></script>
+  <script src="js/unlocks.js"></script>
+  <script src="js/payments.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/intro.js"></script>
+</body>
+</html>
