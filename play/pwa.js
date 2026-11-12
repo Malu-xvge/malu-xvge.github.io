@@ -5,8 +5,47 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {});
+      navigator.serviceWorker.register('sw.js', { scope: './' }).then(function () {
+        return navigator.serviceWorker.ready;
+      }).then(function (reg) {
+        startWarm(reg);
+      }).catch(function () {});
     });
+  }
+
+  // The core app is cached by the service worker on install. The photos and
+  // music are too big for that, so the page downloads them into the same
+  // cache after the first load. The service worker would be suspended halfway
+  // through; the page keeps going as long as the game is open.
+  function startWarm(reg) {
+    if (!window.caches) return;
+
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      var plan = e.data;
+      if (!plan || plan.type !== 'warm-plan') return;
+      runWarm(plan);
+    });
+
+    if (reg.active) reg.active.postMessage({ type: 'warm-plan' });
+  }
+
+  function runWarm(plan) {
+    var queue = (plan.warm || []).slice();
+    var WORKERS = 4;
+
+    for (var w = 0; w < WORKERS; w++) work();
+
+    async function work() {
+      var cache = await caches.open(plan.runtimeCache);
+      while (queue.length) {
+        var url = queue.shift();
+        try {
+          if (await cache.match(url)) continue;
+          var res = await fetch(url, { cache: 'reload' });
+          if (res && res.ok) await cache.put(url, res);
+        } catch (err) { /* offline or flaky: the next visit finishes it */ }
+      }
+    }
   }
 
   // Payments open in another tab/page. When the player comes back, re-check any
