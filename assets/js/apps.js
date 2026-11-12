@@ -18,14 +18,14 @@ const APPS = [
     status: 'available',
     featured: true,
 
-    version: '1.2.3',
-    versionCode: 7,
+    version: '1.2.4',
+    versionCode: 8,
     released: '12 Nov 2026',
     size: '14.4 MB',
     minAndroid: '7.0',
     price: 'Free',
-    apk: 'downloads/GameNight-1.2.3.apk',
-    sha256: 'E4AEF91E38C3D484DE4A53BF8173EE306D48D5A88C5AAA953C3294F8CBD58CA9',
+    apk: 'downloads/GameNight-1.2.4.apk',
+    sha256: 'E648BAD3CDBD99835BA083721CAB6D713CF2F25FBB57553E252880BA41A51858',
 
     // Real ratings only. average stays null until there are reviews.
     rating: { average: null, count: 0 },
@@ -43,16 +43,16 @@ const APPS = [
       { t: 'One point per answer', d: 'Every correct answer is worth exactly 1 point. Charades and Dares are for laughs, not points.' },
       { t: 'Play with no internet', d: 'Games, questions and timers are all on the phone. Only buying an unlock needs a connection.' },
       { t: 'Built for Malawian nights', d: 'Chichewa proverbs, Malawian trivia, and dares that make sense here.' },
-      { t: 'Cheap to unlock', d: 'Earn points by playing, or pay with mobile money. One category, or the whole game.' }
+      { t: 'Cheap to unlock', d: 'MK 500 unlocks any locked category or Apa Ndipati; MK 2,000 unlocks everything. You can also earn points by playing.' }
     ],
 
     modes: ['Trivia', 'Charades', 'Dares', 'Quick Challenge', 'Ndagi', 'Apa Ndipati'],
 
     whatsNew: [
+      'Charades results are now final: swiping or tilting on the results screen no longer scores a word or restarts the round.',
+      'Apa Ndipati is now MK 500, and unlocking the whole game is MK 2,000.',
       'The intro can be replayed any time from Settings.',
-      'Ndagi now plays Malawian proverbs properly, with the meaning shown after each answer.',
-      'Asian Proverbs added as its own Ndagi set.',
-      'Intro is shorter and no longer mentions any price.'
+      'Ndagi plays Malawian proverbs properly, with the meaning shown after each answer.'
     ],
 
     screenshots: [
