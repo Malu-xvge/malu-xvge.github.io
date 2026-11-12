@@ -43,6 +43,7 @@
             '<span>v' + esc(app.version) + '</span><span aria-hidden="true">·</span>' +
             '<span>' + esc(app.size) + '</span><span aria-hidden="true">·</span>' +
             '<span>Android ' + esc(app.minAndroid) + '+</span><span aria-hidden="true">·</span>' +
+            (app.iphone ? '<span>iPhone + iPad</span><span aria-hidden="true">·</span>' : '') +
             '<span>' + esc(app.price) + '</span>' +
           '</div>' +
           '<div class="card-actions">' +
@@ -66,7 +67,9 @@
     list.innerHTML = APPS.map(function (app) {
       var available = app.status === 'available';
       var meta = available
-        ? ['v' + app.version, app.size, 'Android ' + app.minAndroid + '+', 'Updated ' + app.released]
+        ? ['v' + app.version, app.size, 'Android ' + app.minAndroid + '+']
+            .concat(app.iphone ? ['iPhone + iPad'] : [])
+            .concat(['Updated ' + app.released])
         : ['In development'];
       return '' +
         '<article class="app-row' + (available ? '' : ' soon') + '">' +
@@ -184,15 +187,30 @@
               '<div><dt>Price</dt><dd>' + esc(app.price) + '</dd></div>' +
               '<div><dt>Updated</dt><dd>' + esc(app.released) + '</dd></div>' +
             '</dl>' +
-            '<p class="meta-line" style="margin-top:1rem">SHA-256</p>' +
-            '<div class="sha">' +
-              '<input id="shaValue" type="text" readonly aria-label="SHA-256 checksum" value="' + esc(app.sha256) + '">' +
-              '<button type="button" id="copySha">Copy</button>' +
-            '</div>' +
+            '<details class="verify" style="margin-top:1rem">' +
+              '<summary>Verify download</summary>' +
+              '<p class="meta-line" style="margin:0.6rem 0 0">SHA-256 — compare it with the file you downloaded.</p>' +
+              '<div class="sha">' +
+                '<input id="shaValue" type="text" readonly aria-label="SHA-256 checksum" value="' + esc(app.sha256) + '">' +
+                '<button type="button" id="copySha">Copy</button>' +
+              '</div>' +
+            '</details>' +
           '</div>' +
 
+          (app.iphone ? '' +
+            '<div class="panel iphone-panel">' +
+              '<h3>On iPhone or iPad</h3>' +
+              '<p>No App Store needed. GameNight runs in Safari and can sit on your Home Screen like an app.</p>' +
+              '<ol class="install-list">' +
+                '<li>Open <b>' + esc(app.iphone.label) + '</b> in Safari.</li>' +
+                '<li>Tap <b>Share</b>, then <b>Add to Home Screen</b>.</li>' +
+                '<li>Keep it open once to finish the first load (' + esc(app.iphone.size) + '). After that it works offline.</li>' +
+              '</ol>' +
+              '<a class="btn btn-ghost btn-sm" href="' + esc(app.iphone.url) + '" style="width:100%;margin-top:0.9rem">' + esc(app.iphone.label) + '</a>' +
+            '</div>' : '') +
+
           '<div class="panel">' +
-            '<h3>Installing</h3>' +
+            '<h3>Installing on Android</h3>' +
             '<ol class="install-list">' +
               '<li>Download the APK on your phone.</li>' +
               '<li>Allow <b>install unknown apps</b> for Chrome when asked. Android warns about anything outside the Play Store.</li>' +

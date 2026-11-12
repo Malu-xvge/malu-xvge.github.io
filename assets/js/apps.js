@@ -5,7 +5,7 @@ const SITE = {
   name: 'ALUM',
   full: 'ALUM',
   city: 'Lilongwe, Malawi',
-  email: 'malumbomsopa@gmail.com',
+  email: 'alumtech9@gmail.com',
   github: 'https://github.com/Malu-xvge'
 };
 
@@ -26,6 +26,13 @@ const APPS = [
     price: 'Free',
     apk: 'downloads/GameNight-1.2.4.apk',
     sha256: 'E648BAD3CDBD99835BA083721CAB6D713CF2F25FBB57553E252880BA41A51858',
+
+    // Same build, running as a web app for iPhone/iPad at /play/.
+    iphone: {
+      url: 'play/',
+      size: '10 MB',
+      label: 'Play on iPhone'
+    },
 
     // Real ratings only. average stays null until there are reviews.
     rating: { average: null, count: 0 },
