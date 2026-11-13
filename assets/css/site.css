@@ -365,6 +365,12 @@ a.btn:hover { text-decoration: none; }
 .app-section h2 { font-size: 1.25rem; margin-bottom: 0.9rem; }
 .app-section p { color: var(--muted); }
 .app-section .hl-list { margin-top: 0.4rem; }
+
+.price-list { list-style: none; margin: 1rem 0 0; padding: 0; border-top: 1px solid var(--line); }
+.price-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.7rem 0.2rem; border-bottom: 1px solid var(--line); }
+.price-list span { color: var(--cream); }
+.price-list em { color: var(--muted); font-style: normal; font-size: 0.85rem; margin-left: 0.4rem; }
+.price-list b { color: var(--gold-bright); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .app-main .shots { margin: 0 0 0.4rem; }
 .app-main .shots img { width: 220px; }
 

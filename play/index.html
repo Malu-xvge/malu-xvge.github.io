@@ -12,11 +12,11 @@
   <title>GameNight</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0b'/%3E%3Ctext x='32' y='46' font-family='system-ui,sans-serif' font-size='38' font-weight='800' text-anchor='middle' fill='%23FFD76A'%3EG%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/web.css?v=gamenight-202611121641">
+  <link rel="stylesheet" href="css/web.css?v=gamenight-202611131531">
   <script>try { if (localStorage.getItem('gn_intro') !== '1') document.documentElement.classList.add('intro-pending'); } catch (e) {}</script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
-  <script src="pwa.js?v=gamenight-202611121641" defer></script>
+  <script src="pwa.js?v=gamenight-202611131531" defer></script>
 </head>
 <body>
 
@@ -130,9 +130,10 @@
       <div class="settings-group points-group">
         <p class="section-label">Points</p>
         <div class="points-balance"><span class="points-star">⭐</span><span id="pointsBalance">0</span></div>
-        <p class="points-hint">Earn points with right answers in Trivia, Ndagi, Quick Challenge and Apa Ndipati. Spend them to unlock new categories.</p>
-        <button id="unlockAllBtn" class="howto-next">Unlock everything for MK 2,000</button>
-        <p class="points-hint">One payment unlocks every category and Apa Ndipati — cheaper than buying categories one by one.</p>
+        <p class="points-hint">Earn points with right answers in Trivia, Ndagi, Quick Challenge and Apa Ndipati. A category you open with points stays open.</p>
+        <p id="passStatus" class="points-hint"></p>
+        <div id="passOptions" class="pass-options"></div>
+        <p class="points-hint">A pass opens every category and Apa Ndipati until it ends. It does not renew by itself, so nothing is charged without you.</p>
         <p id="unlockAllNote" class="unlock-note"></p>
       </div>
       <div class="settings-group">

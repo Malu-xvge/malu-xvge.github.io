@@ -80,7 +80,7 @@ function renderSettings() {
   document.getElementById('charadesTimerValue').textContent = getSetting('gn_charadesTimer', '60') + 's';
   document.getElementById('quickTimerValue').textContent = getSetting('gn_quickTimer', '45') + 's';
   updatePointsDisplays();
-  updateUnlockAllUI();
+  updatePassUI();
   if (typeof renderMusicToggle === 'function') renderMusicToggle();
 }
 
@@ -162,13 +162,13 @@ const HOWTO = {
     { t: 'Choose a Category', d: 'Most games let you pick a category: Malawian culture, the wider world and more.', art: 'cards' },
     { t: 'Play and Score', d: 'Answer, act or perform before time runs out. Right answers can earn you points.', art: 'stopwatch' },
     { t: 'Earn Points', d: 'Every right answer earns 1 point in Trivia, Ndagi, Quick Challenge and Apa Ndipati. Charades and Dares pay no points, because you judge those yourselves.', art: 'star' },
-    { t: 'Buy or Earn', d: 'Locked categories open with points you have earned, or you can buy them outright with mobile money. Your choice. You can also unlock everything from Settings.', art: 'buyearn' },
+    { t: 'Earn or Pass', d: 'A locked category opens when you have earned enough points, and it stays open. If you want everything at once, Settings has passes for a day, a month or longer.', art: 'buyearn' },
     { t: 'Play Together', d: 'GameNight is best with friends. In Trivia, choose a game master to read out the questions. In Charades, pass the phone around so everyone gets a turn.', art: 'people' }
   ]},
   trivia: { steps: [
     { t: 'Pick a Category', d: 'Choose a topic, from Malawian showbiz and history to world knowledge and pop culture.', art: 'cards' },
     { t: 'Choose the Answer', d: 'Every question has four options and only one is right. Tap your answer: green means you got it.', art: 'trivia' },
-    { t: 'Earn Points', d: 'Every correct answer earns 1 point. Spend them on unlocking new categories, or buy a category outright.', art: 'star' }
+    { t: 'Earn Points', d: 'Every correct answer earns 1 point. Spend them on a locked category and it stays unlocked.', art: 'star' }
   ]},
   charades: { steps: [
     { t: 'Pick a Category', d: 'Choose a theme: Malawian culture, famous faces, landmarks, science, movies and more.', art: 'cards' },
@@ -369,8 +369,32 @@ function tierOf(mode, cat) {
   return (t && t[cat]) || 'free';
 }
 
+function passList() {
+  return (UNLOCK_CONFIG.passes || []).slice();
+}
+
+function passById(id) {
+  return passList().find((p) => p.id === id) || null;
+}
+
+function passUntilMs() {
+  return parseInt(getSetting('gn_passUntil', '0'), 10) || 0;
+}
+
+function passGraceMs() {
+  return Math.max(0, Number(UNLOCK_CONFIG.passGraceHours) || 0) * 3600 * 1000;
+}
+
+// A pass is still honoured for passGraceHours after it ends, so a game night
+// that runs late is never cut off mid-round.
+function activePass() {
+  const until = passUntilMs();
+  if (!until || Date.now() > until + passGraceMs()) return null;
+  return { until, label: getSetting('gn_passLabel', 'Pass') };
+}
+
 function isAllUnlocked() {
-  return getSetting('gn_unlockAll', '') === '1';
+  return getSetting('gn_unlockAll', '') === '1' || !!activePass();
 }
 
 function isUnlocked(mode, cat) {
@@ -399,12 +423,12 @@ let unlockCtx = null;
 function unlockInfo(ctx) {
   if (ctx.kind === 'mode') {
     const m = UNLOCK_CONFIG.modes[ctx.mode];
-    return { key: 'mode::' + ctx.mode, tier: m.tier, title: 'Apa Ndipati', points: m.points, kwacha: m.kwacha };
+    return { key: 'mode::' + ctx.mode, tier: m.tier, title: 'Apa Ndipati', points: m.points };
   }
   const tier = tierOf(ctx.mode, ctx.cat);
   const price = UNLOCK_CONFIG[tier] || UNLOCK_CONFIG.premium;
   const points = (UNLOCK_CONFIG.pointsByMode || {})[ctx.mode] || price.points;
-  return { key: ctx.mode + '::' + ctx.cat, tier, title: categoryLabel(ctx.cat), points, kwacha: price.kwacha };
+  return { key: ctx.mode + '::' + ctx.cat, tier, title: categoryLabel(ctx.cat), points };
 }
 
 // One taste of what is inside, so the lock is tempting rather than a blank wall.
@@ -438,9 +462,9 @@ function renderUnlockBody() {
   const pct = Math.min(100, Math.round(have / info.points * 100));
   const enough = have >= info.points;
   const canBuy = typeof paymentsReady === 'function' && paymentsReady();
+  const cheapest = passList()[0] || { kwacha: 500 };
   document.getElementById('unlockBody').innerHTML = `
-    <button id="unlockBuyBtn" class="howto-next">Buy for MK ${fmtNum(info.kwacha)}</button>
-    <p class="unlock-or">OR EARN IT</p>
+    <p class="unlock-or">EARN IT</p>
     <p class="unlock-price"><strong>${fmtNum(info.points)} points</strong></p>
     <div class="unlock-progress"><div style="width:${pct}%"></div></div>
     <p class="unlock-have">You have ${fmtNum(have)} of ${fmtNum(info.points)} points</p>
@@ -448,55 +472,108 @@ function renderUnlockBody() {
       ${enough ? 'Unlock with points' : 'Unlock with points (' + fmtNum(info.points - have) + ' to go)'}
     </button>
     <p id="unlockNote" class="unlock-note">${canBuy ? '' : 'Mobile money buying is not active yet. Unlock with points for now.'}</p>
-    <p class="unlock-alt">Or unlock everything in Settings for MK ${fmtNum(UNLOCK_CONFIG.unlockAllKwacha)}.</p>`;
+    <p class="unlock-alt">Or open everything at once with a pass, from MK ${fmtNum(cheapest.kwacha)} for a day.</p>
+    <button id="unlockPassBtn" class="howto-next">See the passes</button>`;
   document.getElementById('unlockPointsBtn').addEventListener('click', spendPointsToUnlock);
-  document.getElementById('unlockBuyBtn').addEventListener('click', buyToUnlock);
+  document.getElementById('unlockPassBtn').addEventListener('click', openPasses);
 }
 
-// "Unlock everything" button in Settings
-function updateUnlockAllUI() {
-  const btn = document.getElementById('unlockAllBtn');
-  if (!btn) return;
-  const all = isAllUnlocked();
-  btn.textContent = all ? 'Everything unlocked ✓' : 'Unlock everything for MK ' + fmtNum(UNLOCK_CONFIG.unlockAllKwacha);
-  btn.disabled = all;
+// Settings -> passes. Jump straight there from a locked category.
+function openPasses() {
+  closeUnlock();
+  renderSettings();
+  showScreen('settingsScreen');
+  const grid = document.getElementById('passOptions');
+  if (grid) setTimeout(() => grid.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
 }
 
-function buyEverything() {
+// One payment opens everything until the pass ends. Nothing renews by itself,
+// because a mobile-money wallet cannot be charged without the player.
+function updatePassUI() {
+  const grid = document.getElementById('passOptions');
+  if (grid && grid.dataset.built !== '1') {
+    grid.innerHTML = passList().map((p) => `
+      <button class="${p.days === 0 ? 'howto-next' : 'unlock-secondary'}" data-pass="${p.id}">MK ${fmtNum(p.kwacha)} — ${p.note || p.label}</button>`).join('');
+    grid.dataset.built = '1';
+    grid.querySelectorAll('[data-pass]').forEach((btn) => {
+      btn.addEventListener('click', () => buyPass(btn.dataset.pass));
+    });
+  }
+
+  const lifetime = getSetting('gn_unlockAll', '') === '1';
+  const pass = activePass();
+  const status = document.getElementById('passStatus');
+  if (status) {
+    if (lifetime) status.textContent = 'Everything is unlocked for good.';
+    else if (pass) status.textContent = 'Everything is open until ' + new Date(pass.until).toLocaleDateString() + ', ' + new Date(pass.until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '.';
+    else status.textContent = 'Everything is locked for now. Earn points to open a category for good, or buy a pass below.';
+  }
+  if (grid) {
+    grid.querySelectorAll('[data-pass]').forEach((btn) => {
+      const p = passById(btn.dataset.pass);
+      btn.disabled = !p || (p.days === 0 && lifetime);
+    });
+  }
+}
+
+async function buyPass(itemId) {
   const note = document.getElementById('unlockAllNote');
-  const btn = document.getElementById('unlockAllBtn');
   if (typeof paymentsReady !== 'function' || !paymentsReady()) {
     if (note) note.textContent = typeof paymentUnavailableMessage === 'function'
       ? paymentUnavailableMessage()
       : 'Buying is coming soon.';
     return;
   }
-  if (btn) btn.disabled = true;
+  if (!passById(itemId)) return;
+  if (note) note.textContent = paymentStageText('checking');
+  try {
+    const recovered = typeof checkPendingPurchase === 'function' ? await checkPendingPurchase(itemId) : null;
+    if (recovered && recovered.status === 'success') {
+      applyPass(itemId, recovered.days);
+      return;
+    }
+  } catch (e) {
+    if (note) note.textContent = 'Could not check your last payment. Please try again in a moment.';
+    return;
+  }
   if (note) note.textContent = paymentStageText('starting');
-  startPurchase('all', (stage) => {
+  startPurchase(itemId, (stage) => {
     if (note) note.textContent = paymentStageText(stage);
   }).then((result) => {
-    if (result && result.status === 'success') {
-      unlockEverything();
-      if (note) note.textContent = 'Payment received. Everything is unlocked.';
-    }
+    if (result && result.status === 'success') applyPass(itemId, result.days);
   }).catch((err) => {
-    updateUnlockAllUI();
     if (note) note.textContent = paymentErrorMessage(err);
   });
+}
+
+// Called once the server has confirmed a pass payment. Buying while a pass is
+// still running adds the new days to the end of it.
+function applyPass(itemId, days) {
+  const p = passById(itemId) || {};
+  if (p.days === 0 || itemId === 'unlock::life') {
+    unlockEverything();
+    return;
+  }
+  const addDays = Number(days) > 0 ? Number(days) : (p.days || 1);
+  const base = Math.max(Date.now(), passUntilMs());
+  setSetting('gn_passUntil', String(base + addDays * 86400000));
+  setSetting('gn_passLabel', p.label || 'Pass');
+  refreshHomeLocks();
+  updatePassUI();
+  playSuccess();
+  vibrateSuccess();
+  showPointsToast('🔓 Everything open — ' + (p.note || addDays + ' days') + '!');
 }
 
 // Call this once the payment has been confirmed by the server.
 function unlockEverything() {
   setSetting('gn_unlockAll', '1');
   refreshHomeLocks();
-  updateUnlockAllUI();
+  updatePassUI();
   playSuccess();
   vibrateSuccess();
-  showPointsToast('🔓 Everything unlocked!');
+  showPointsToast('🔓 Everything unlocked for good!');
 }
-
-document.getElementById('unlockAllBtn').addEventListener('click', buyEverything);
 
 function spendPointsToUnlock() {
   const ctx = unlockCtx;
@@ -504,52 +581,6 @@ function spendPointsToUnlock() {
   if (getPoints() < info.points) return;
   setPoints(getPoints() - info.points);
   finishUnlock(ctx, info);
-}
-
-// Buy the current category or mode over mobile money. The server decides the
-// price and confirms the payment before we unlock anything.
-async function buyToUnlock() {
-  const note = document.getElementById('unlockNote');
-  const ctx = unlockCtx;
-  if (!ctx) return;
-  const info = unlockInfo(ctx);
-  if (typeof paymentsReady !== 'function' || !paymentsReady()) {
-    if (note) note.textContent = typeof paymentUnavailableMessage === 'function'
-      ? paymentUnavailableMessage()
-      : 'Buying is coming soon. For now you can earn this with points.';
-    return;
-  }
-  const buyBtn = document.getElementById('unlockBuyBtn');
-  const ptsBtn = document.getElementById('unlockPointsBtn');
-  if (buyBtn) buyBtn.disabled = true;
-  if (ptsBtn) ptsBtn.disabled = true;
-  if (note) note.textContent = paymentStageText('checking');
-  try {
-    const recovered = typeof checkPendingPurchase === 'function'
-      ? await checkPendingPurchase(info.key)
-      : null;
-    if (recovered && recovered.status === 'success') {
-      finishUnlock(ctx, info);
-      return;
-    }
-  } catch (e) {
-    if (buyBtn) buyBtn.disabled = false;
-    if (ptsBtn) ptsBtn.disabled = getPoints() < info.points;
-    if (note) note.textContent = 'Could not check your last payment. Please try again in a moment.';
-    return;
-  }
-  if (note) note.textContent = paymentStageText('starting');
-  startPurchase(info.key, (stage) => {
-    if (note) note.textContent = paymentStageText(stage);
-  }).then((result) => {
-    if (result && result.status === 'success') {
-      finishUnlock(ctx, info);
-    }
-  }).catch((err) => {
-    if (buyBtn) buyBtn.disabled = false;
-    if (ptsBtn) ptsBtn.disabled = getPoints() < info.points;
-    if (note) note.textContent = paymentErrorMessage(err);
-  });
 }
 
 function finishUnlock(ctx, info) {
@@ -602,13 +633,16 @@ initPoints();
 // unlock without opening any screens.
 function grantPaidUnlock(itemId) {
   if (!itemId) return;
-  if (itemId === 'all') {
-    if (!isAllUnlocked()) unlockEverything();
+  if (itemId === 'all' || itemId === 'unlock::life') {
+    if (getSetting('gn_unlockAll', '') !== '1') unlockEverything();
     return;
   }
+  const pass = passById(itemId);
+  if (pass) { applyPass(itemId, pass.days); return; }
+  // A category bought before passes existed stays unlocked for good.
   addUnlocked(itemId);
   refreshHomeLocks();
-  updateUnlockAllUI();
+  updatePassUI();
   playSuccess();
   vibrateSuccess();
   const label = itemId.indexOf('mode::') === 0

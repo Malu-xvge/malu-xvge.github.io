@@ -165,6 +165,16 @@
             }).join('') + '</ul>' +
           '</section>' +
 
+          (app.passes ? '' +
+            '<section class="app-section">' +
+              '<h2>What it costs</h2>' +
+              '<p>GameNight is free to download. Points you earn open a locked category, and it stays open for good. If you want everything at once, a pass opens every category and Apa Ndipati until it ends.</p>' +
+              '<ul class="price-list">' + app.passes.map(function (p) {
+                return '<li><span>' + esc(p.name) + ' <em>' + esc(p.note) + '</em></span><b>' + esc(p.price) + '</b></li>';
+              }).join('') + '</ul>' +
+              '<p class="note" style="margin-top:0.9rem">A pass does not renew by itself: nothing is charged unless you pay again.</p>' +
+            '</section>' : '') +
+
           '<section class="app-section">' +
             '<h2>Ratings and reviews</h2>' +
             reviewHtml +
