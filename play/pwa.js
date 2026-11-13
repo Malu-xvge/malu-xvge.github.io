@@ -12,6 +12,22 @@
   })();
 
   if ('serviceWorker' in navigator) {
+    // If a newer worker takes over this page after it started, the scripts in
+    // memory may belong to the previous build. Reload once so the whole app
+    // comes from one version. Only when a worker was already in charge: a first
+    // visit is fine as it is.
+    var HAD_WORKER = !!navigator.serviceWorker.controller;
+    if (HAD_WORKER) {
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        var KEY = 'gn_sw_reload_' + MY_VERSION;
+        try {
+          if (sessionStorage.getItem(KEY) === '1') return;
+          sessionStorage.setItem(KEY, '1');
+        } catch (e) { return; }
+        location.reload();
+      });
+    }
+
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js', { scope: './', updateViaCache: 'none' }).then(function (reg) {
         // Browsers only re-check sw.js about once a day on their own, so a new
