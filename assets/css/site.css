@@ -208,6 +208,17 @@ p { margin: 0 0 1rem; }
 .shots::-webkit-scrollbar { height: 8px; }
 .shots::-webkit-scrollbar-thumb { background: rgba(230, 188, 85, 0.25); border-radius: 8px; }
 
+/* Landscape captures: one per row at the full width of the column, so the
+   wide screen stays readable instead of shrinking to a sliver. */
+.shots-wide { display: grid; gap: 1rem; margin: 0 0 1.2rem; }
+.shots-wide a { display: block; }
+.shots-wide img {
+  width: 100%; height: auto; display: block;
+  border-radius: 16px; border: 1px solid var(--line);
+  box-shadow: 0 16px 36px -20px #000;
+  background: #000;
+}
+
 /* ---------- install steps ---------- */
 .steps { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); counter-reset: step; }
 .step { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.35rem 1.4rem 1.35rem 1.4rem; }

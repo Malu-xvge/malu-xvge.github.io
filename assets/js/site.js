@@ -94,6 +94,28 @@
   }
 
   /* ---------------- app page ---------------- */
+  // Wide (landscape) captures get their own full-width rows: at the 220 px used
+  // for a portrait phone shot they would be a 90 px sliver. Portrait shots stay
+  // in the scrolling strip.
+  function shotHtml(app) {
+    var all = app.screenshots || [];
+    var wide = all.filter(function (s) { return s.wide; });
+    var tall = all.filter(function (s) { return !s.wide; });
+
+    function link(s) {
+      return '<a href="' + esc(s.src) + '" target="_blank" rel="noopener">' +
+             '<img src="' + esc(s.src) + '" alt="' + esc(s.alt) + '"' +
+             (s.wide ? '' : ' loading="lazy"') + '></a>';
+    }
+
+    return (wide.length
+      ? '<div class="shots-wide" aria-label="Screenshots in landscape">' + wide.map(link).join('') + '</div>'
+      : '') +
+      (tall.length
+        ? '<div class="shots" aria-label="Screenshots">' + tall.map(link).join('') + '</div>'
+        : '');
+  }
+
   function renderAppPage() {
     var root = $('#appPage');
     if (!root) return;
@@ -145,12 +167,7 @@
 
       '<div class="app-layout">' +
         '<div class="app-main">' +
-          '<div class="shots" aria-label="Screenshots">' +
-            (app.screenshots || []).map(function (s) {
-              return '<a href="' + esc(s.src) + '" target="_blank" rel="noopener">' +
-                     '<img src="' + esc(s.src) + '" alt="' + esc(s.alt) + '" loading="lazy" width="220"></a>';
-            }).join('') +
-          '</div>' +
+          shotHtml(app) +
 
           '<section class="app-section">' +
             '<h2>About this app</h2>' +

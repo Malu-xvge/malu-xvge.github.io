@@ -72,9 +72,9 @@ const APPS = [
 
     screenshots: [
       { src: 'assets/img/shots/home.jpg', alt: 'GameNight home screen with the six game tiles' },
-      { src: 'assets/img/shots/trivia.jpg', alt: 'A trivia question with four answers' },
+      { src: 'assets/img/shots/trivia.jpg', alt: 'A trivia question with four answers, in landscape', wide: true },
       { src: 'assets/img/shots/ndagi.jpg', alt: 'A Malawian proverb with its meaning revealed' },
-      { src: 'assets/img/shots/charades.jpg', alt: 'A charades card with the timer running' },
+      { src: 'assets/img/shots/charades.jpg', alt: 'A charades card and the running timer, in landscape', wide: true },
       { src: 'assets/img/shots/results.jpg', alt: 'End of round score screen' }
     ]
   }
