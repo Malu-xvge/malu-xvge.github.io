@@ -544,6 +544,34 @@ button:disabled { opacity: 0.7; }
 .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; }
 .toggle-btn { padding: 0.5rem 1.1rem; border-radius: 20px; font-size: 0.9rem; }
 
+/* Gameplay / Unlock headings above the settings cards */
+.settings-heading {
+  color: var(--gold-bright);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  margin: 1.1rem 0 -0.3rem;
+}
+
+/* One-time "rate us" card on the results screens */
+.review-prompt {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border: 1.5px dashed var(--gold);
+  border-radius: 16px;
+  background: rgba(230, 188, 85, 0.08);
+}
+.review-prompt p { font-size: 0.9rem; margin: 0 0 0.7rem; }
+.review-prompt button { width: 100%; }
+.review-prompt .review-later {
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid var(--gold-deep);
+  margin-top: 0.5rem;
+}
+
 .timer-stepper { display: flex; align-items: center; justify-content: center; gap: 1.2rem; margin-bottom: 1rem; }
 .timer-stepper button { width: 44px; height: 44px; border-radius: 50%; padding: 0; font-size: 1.3rem; }
 .timer-stepper span { font-size: 1.2rem; font-weight: bold; min-width: 50px; text-align: center; color: var(--gold-bright); }

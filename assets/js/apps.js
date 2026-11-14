@@ -18,14 +18,18 @@ const APPS = [
     status: 'available',
     featured: true,
 
-    version: '1.3.0',
-    versionCode: 9,
-    released: '13 Nov 2026',
+    version: '1.4.0',
+    versionCode: 10,
+    released: '14 Nov 2026',
     size: '15.5 MB',
     minAndroid: '7.0',
     price: 'Free',
-    apk: 'downloads/GameNight-1.3.0.apk',
-    sha256: 'E490EA71B2401022C17AD23A1B86F45270CF79FE7FDA2386CEC643E007FB8AD0',
+    apk: 'https://github.com/Malu-xvge/malu-xvge.github.io/releases/download/gamenight-1.4.0/GameNight-1.4.0.apk',
+    sha256: 'B14F415939F03F629A84EAC57F2CC8AE219312DB4B368D5AB39A0A8A31039E94',
+
+    // The APK is attached to this GitHub release, so the download count comes
+    // straight from GitHub instead of a made-up number.
+    release: { repo: 'Malu-xvge/malu-xvge.github.io', tag: 'gamenight-1.4.0' },
 
     // Same build, running as a web app for iPhone/iPad at /play/.
     iphone: {
@@ -64,10 +68,10 @@ const APPS = [
     ],
 
     whatsNew: [
-      'Passes replace the single-category price: MK 500 for a day, MK 2,000 for a month, MK 5,000 for three months, MK 10,000 for life.',
-      'Locked categories now open with points only, and a category you open stays open for good.',
-      'Buying while a pass is running adds the new days to the end of it. Nothing renews on its own.',
-      'The intro can be replayed any time from Settings.'
+      'Settings is split into Gameplay and Unlock, so sound, timers and the intro sit apart from points and passes.',
+      'The intro now points to Settings → Unlock when it explains earning and unlocking.',
+      'After a few finished rounds, a one-time card offers to rate GameNight. The same button is in Settings; both open the reviews section on the website.',
+      'No price changes: points still open a category for good, and passes still never renew by themselves.'
     ],
 
     screenshots: [

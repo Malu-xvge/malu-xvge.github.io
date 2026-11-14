@@ -218,7 +218,7 @@ const INTRO_IMAGES = {
 const INTRO_SLIDES = [
   { t: 'Welcome to GameNight', d: 'Party games rooted in Malawian culture. Gather your friends and let the fun begin.', img: INTRO_IMAGES.welcome, art: sceneFriends },
   { t: 'Six Ways to Play', d: 'Quiz each other, act it out, take a dare, solve riddles or guess places across Malawi.', img: INTRO_IMAGES.modes, art: sceneForehead },
-  { t: 'Earn and Unlock', d: 'Every right answer earns 1 point. Spend points on a locked category and it stays open, or get a pass in Settings to open everything for a day, a month or longer.', img: INTRO_IMAGES.points, art: () => HOWTO_ART.star },
+  { t: 'Earn and Unlock', d: 'Every right answer earns 1 point. Open Settings and tap Unlock to spend points on a category for good, or get a pass that opens everything for a day, a month or longer.', img: INTRO_IMAGES.points, art: () => HOWTO_ART.star },
   { t: 'How to Play', d: 'Tap the i button when you pick a category in any game — it shows a step-by-step guide to that game.', img: INTRO_IMAGES.help, art: () => HOWTO_ART.grid6 },
   { t: "Let's Play!", d: 'Pick a game master for Trivia and pass the phone around for Charades. Have fun! You can replay this intro any time in Settings.', img: INTRO_IMAGES.play, art: sceneCelebrate }
 ];

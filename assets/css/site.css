@@ -418,6 +418,32 @@ a.btn:hover { text-decoration: none; }
 .review-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.4rem; }
 .review p { margin: 0; font-size: 0.93rem; }
 
+/* review form: sends a pre-filled message, because the site has no server to
+   collect submissions and the owner reads every review before it is published */
+.review-form { margin-top: 1.5rem; padding: 1.35rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.review-form h3 { color: var(--gold-bright); font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 0.6rem; }
+.review-help { font-size: 0.88rem; color: var(--muted); margin: 0 0 1rem; }
+.star-picker { display: flex; gap: 0.2rem; margin: 0 0 1rem; }
+.star-pick {
+  background: none; border: 0; margin: 0; padding: 0 0.08rem;
+  font-size: 1.9rem; line-height: 1; cursor: pointer;
+  color: rgba(230, 188, 85, 0.28);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.star-pick.on, .star-pick:hover { color: var(--gold-bright); transform: translateY(-1px); }
+.star-pick:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; border-radius: 4px; }
+.field { display: block; margin: 0 0 0.9rem; }
+.field > span { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 0.35rem; }
+.field input, .field textarea {
+  width: 100%; box-sizing: border-box;
+  background: #0b0a08; border: 1px solid var(--line); border-radius: 10px;
+  color: var(--cream); padding: 0.7rem 0.8rem;
+  font: inherit; font-size: 0.93rem;
+}
+.field textarea { resize: vertical; min-height: 5.5rem; }
+.field input:focus, .field textarea:focus { outline: 2px solid var(--gold-bright); outline-offset: 1px; }
+.form-note { margin: 0.7rem 0 0; font-size: 0.86rem; color: var(--gold-bright); min-height: 1.2em; }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

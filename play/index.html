@@ -11,12 +11,12 @@
   <meta name="apple-mobile-web-app-title" content="GameNight">
   <title>GameNight</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0b'/%3E%3Ctext x='32' y='46' font-family='system-ui,sans-serif' font-size='38' font-weight='800' text-anchor='middle' fill='%23FFD76A'%3EG%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=gamenight-202611131538">
-  <link rel="stylesheet" href="css/web.css?v=gamenight-202611131538">
+  <link rel="stylesheet" href="css/style.css?v=gamenight-202611140413">
+  <link rel="stylesheet" href="css/web.css?v=gamenight-202611140413">
   <script>try { if (localStorage.getItem('gn_intro') !== '1') document.documentElement.classList.add('intro-pending'); } catch (e) {}</script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
-  <script src="pwa.js?v=gamenight-202611131538" defer></script>
+  <script src="pwa.js?v=gamenight-202611140413" defer></script>
 </head>
 <body>
 
@@ -103,6 +103,8 @@
 
     <section id="settingsScreen" class="screen">
       <h2>Settings</h2>
+
+      <p class="settings-heading">Gameplay</p>
       <div class="settings-group">
         <div class="settings-row">
           <span>Sound Effects</span>
@@ -112,8 +114,6 @@
           <span>Music</span>
           <button id="musicToggleBtn" class="toggle-btn">ON</button>
         </div>
-      </div>
-      <div class="settings-group">
         <p class="section-label">Charades Timer</p>
         <div class="timer-stepper">
           <button id="charadesTimerMinus">−</button>
@@ -126,7 +126,11 @@
           <span id="quickTimerValue">45s</span>
           <button id="quickTimerPlus">+</button>
         </div>
+        <button id="replayIntroBtn" class="howto-next">Watch the intro again</button>
+        <button id="rateAppBtn" class="howto-next">Rate GameNight</button>
       </div>
+
+      <p class="settings-heading">Unlock</p>
       <div class="settings-group points-group">
         <p class="section-label">Points</p>
         <div class="points-balance"><span class="points-star">⭐</span><span id="pointsBalance">0</span></div>
@@ -135,10 +139,6 @@
         <div id="passOptions" class="pass-options"></div>
         <p class="points-hint">A pass opens every category and Apa Ndipati until it ends. It does not renew by itself, so nothing is charged without you.</p>
         <p id="unlockAllNote" class="unlock-note"></p>
-      </div>
-      <div class="settings-group">
-        <p class="section-label">Intro</p>
-        <button id="replayIntroBtn" class="howto-next">Watch the intro again</button>
       </div>
       <button class="backBtn">Back</button>
     </section>
@@ -200,19 +200,19 @@
     </div>
   </div>
 
-  <script src="js/ndagi.js?v=gamenight-202611131538"></script>
-  <script src="js/ndagi-extra.js?v=gamenight-202611131538"></script>
-  <script src="js/sound.js?v=gamenight-202611131538"></script>
-  <script src="js/quickchallenge.js?v=gamenight-202611131538"></script>
-  <script src="js/dares.js?v=gamenight-202611131538"></script>
-  <script src="js/charades.js?v=gamenight-202611131538"></script>
-  <script src="js/charades-extra.js?v=gamenight-202611131538"></script>
-  <script src="js/questions.js?v=gamenight-202611131538"></script>
-  <script src="js/audit-fixes.js?v=gamenight-202611131538"></script>
-  <script src="js/apa.js?v=gamenight-202611131538"></script>
-  <script src="js/unlocks.js?v=gamenight-202611131538"></script>
-  <script src="js/payments.js?v=gamenight-202611131538"></script>
-  <script src="js/app.js?v=gamenight-202611131538"></script>
-  <script src="js/intro.js?v=gamenight-202611131538"></script>
+  <script src="js/ndagi.js?v=gamenight-202611140413"></script>
+  <script src="js/ndagi-extra.js?v=gamenight-202611140413"></script>
+  <script src="js/sound.js?v=gamenight-202611140413"></script>
+  <script src="js/quickchallenge.js?v=gamenight-202611140413"></script>
+  <script src="js/dares.js?v=gamenight-202611140413"></script>
+  <script src="js/charades.js?v=gamenight-202611140413"></script>
+  <script src="js/charades-extra.js?v=gamenight-202611140413"></script>
+  <script src="js/questions.js?v=gamenight-202611140413"></script>
+  <script src="js/audit-fixes.js?v=gamenight-202611140413"></script>
+  <script src="js/apa.js?v=gamenight-202611140413"></script>
+  <script src="js/unlocks.js?v=gamenight-202611140413"></script>
+  <script src="js/payments.js?v=gamenight-202611140413"></script>
+  <script src="js/app.js?v=gamenight-202611140413"></script>
+  <script src="js/intro.js?v=gamenight-202611140413"></script>
 </body>
 </html>

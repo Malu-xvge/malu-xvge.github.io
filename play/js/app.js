@@ -7,6 +7,56 @@ function setSetting(key, val) {
   localStorage.setItem(key, val);
 }
 
+// --- Rate and review ---
+// Reviews live on the website's GameNight page, so the app sends players there
+// rather than collecting reviews it cannot show. The prompt appears once, after
+// a few finished rounds, and "Not now" postpones it for a while.
+const REVIEW_URL = 'https://malu-xvge.github.io/gamenight.html#reviews';
+
+function openReviewPage() {
+  playClick();
+  const cap = window.Capacitor;
+  const browser = cap && cap.Plugins && cap.Plugins.Browser;
+  if (browser && typeof browser.open === 'function') {
+    browser.open({ url: REVIEW_URL, presentationStyle: 'fullscreen' });
+    return;
+  }
+  const win = window.open(REVIEW_URL, '_blank');
+  if (!win) window.location.href = REVIEW_URL;
+}
+
+function reviewPromptDue() {
+  if (getSetting('gn_reviewDone', '') === '1') return false;
+  const rounds = parseInt(getSetting('gn_rounds', '0'), 10) || 0;
+  const snooze = parseInt(getSetting('gn_reviewSnooze', '0'), 10) || 0;
+  return rounds >= 3 && rounds >= snooze;
+}
+
+// Every results screen calls this once, so the count reflects real finished rounds.
+function addReviewPrompt(screen) {
+  const rounds = (parseInt(getSetting('gn_rounds', '0'), 10) || 0) + 1;
+  setSetting('gn_rounds', String(rounds));
+  if (!screen || !reviewPromptDue() || screen.querySelector('.review-prompt')) return;
+
+  const box = document.createElement('div');
+  box.className = 'review-prompt';
+  box.innerHTML = `
+    <p>Enjoying GameNight? Rate it on the website and help other people find it.</p>
+    <button id="reviewNowBtn">Rate GameNight</button>
+    <button id="reviewLaterBtn" class="review-later">Not now</button>
+  `;
+  screen.appendChild(box);
+  box.querySelector('#reviewNowBtn').addEventListener('click', () => {
+    setSetting('gn_reviewDone', '1');
+    box.remove();
+    openReviewPage();
+  });
+  box.querySelector('#reviewLaterBtn').addEventListener('click', () => {
+    setSetting('gn_reviewSnooze', String(rounds + 10));
+    box.remove();
+  });
+}
+
 
 // --- Navigation history ---
 let screenHistory = ['homeScreen'];
@@ -102,6 +152,10 @@ document.getElementById('charadesTimerMinus').addEventListener('click', () => ad
 document.getElementById('charadesTimerPlus').addEventListener('click', () => adjustTimer('gn_charadesTimer', 15, 30, 180));
 document.getElementById('quickTimerMinus').addEventListener('click', () => adjustTimer('gn_quickTimer', -15, 30, 180));
 document.getElementById('quickTimerPlus').addEventListener('click', () => adjustTimer('gn_quickTimer', 15, 30, 180));
+
+// Settings -> Rate GameNight: opens the reviews section on the website.
+const rateAppBtn = document.getElementById('rateAppBtn');
+if (rateAppBtn) rateAppBtn.addEventListener('click', openReviewPage);
 
 // =====================================================
 // How to play: the "i" button opens a card from the bottom
@@ -1022,6 +1076,7 @@ function endTrivia() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  addReviewPrompt(screen);
 }
 
 // --- Charades Game Logic (Heads Up! style: full-screen flash + tilt + landscape) ---
@@ -1376,6 +1431,7 @@ function endCharades() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  addReviewPrompt(screen);
 }
 
 // --- Dares Game Logic ---
@@ -1588,6 +1644,7 @@ function endQuickChallenge() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  addReviewPrompt(screen);
 }
 
 // --- Ndagi (Riddles) Game Logic ---
@@ -1742,6 +1799,7 @@ function endApa() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  addReviewPrompt(screen);
 }
 
 const NDAGI_ROUNDS = 10;
@@ -1942,6 +2000,7 @@ function endNdagi() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  addReviewPrompt(screen);
 }
 
 // --- Easter Egg: tap title 5x for version popup ---

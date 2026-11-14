@@ -25,6 +25,64 @@
     return '<span class="stars" role="img" aria-label="' + esc(label) + '">' + out + '</span>';
   }
 
+  /* ---------------- real download counts ----------------
+     The APK is a GitHub release asset, so GitHub's own download_count is the
+     number of times it was actually fetched. Nothing here is estimated: when
+     the API cannot be reached the count stays hidden instead of showing a
+     made-up figure. Results are cached for ten minutes per app. */
+  function fmtCount(n) {
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function fillDownloadCounts() {
+    var targets = $$('[data-dl]');
+    if (!targets.length) return;
+
+    var groups = {};
+    targets.forEach(function (el) {
+      var app = appById(el.getAttribute('data-dl'));
+      if (!app || !app.release || !app.release.tag) return;
+      if (!groups[app.id]) groups[app.id] = { app: app, nodes: [] };
+      groups[app.id].nodes.push(el);
+    });
+
+    Object.keys(groups).forEach(function (id) {
+      var app = groups[id].app;
+      var nodes = groups[id].nodes;
+      var cacheKey = 'alum-dl:' + app.release.tag;
+      var cached = null;
+      try { cached = JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch (e) { cached = null; }
+
+      var show = function (count) {
+        if (count == null) return;
+        nodes.forEach(function (node) {
+          node.textContent = count === 0 ? 'New' : fmtCount(count) + ' download' + (count === 1 ? '' : 's');
+          node.hidden = false;
+        });
+      };
+
+      if (cached && typeof cached.count === 'number' && Date.now() - cached.at < 10 * 60 * 1000) {
+        show(cached.count);
+        return;
+      }
+
+      var url = 'https://api.github.com/repos/' + app.release.repo + '/releases/tags/' + encodeURIComponent(app.release.tag);
+      fetch(url, { headers: { Accept: 'application/vnd.github+json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (rel) {
+          if (!rel || !rel.assets) return;
+          var apks = rel.assets.filter(function (a) { return /\.apk$/i.test(a.name || ''); });
+          var list = apks.length ? apks : rel.assets;
+          var count = list.reduce(function (n, a) { return n + (a.download_count || 0); }, 0);
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify({ at: Date.now(), count: count }));
+          } catch (e) { /* storage full or blocked */ }
+          show(count);
+        })
+        .catch(function () { /* leave the count hidden */ });
+    });
+  }
+
   /* ---------------- home ---------------- */
   function renderHome() {
     var box = $('#featuredCard');
@@ -82,6 +140,7 @@
             '<p class="app-row-tag">' + esc(app.tagline) + '</p>' +
             '<div class="app-row-meta">' +
               meta.map(function (m) { return '<span>' + esc(m) + '</span>'; }).join('') +
+              '<span class="dl-count" data-dl="' + esc(app.id) + '" hidden></span>' +
               '<span class="app-row-rating">' + stars(app.rating.average, app.rating.count) +
                 (app.rating.count ? '' : '<em>No ratings yet</em>') + '</span>' +
             '</div>' +
@@ -131,6 +190,21 @@
 
     var ratingCount = app.rating.count || 0;
     var ratingAvg = app.rating.average;
+
+    var reviewForm = '' +
+      '<form class="review-form" id="reviewForm" novalidate>' +
+        '<h3>Leave a rating</h3>' +
+        '<p class="review-help">Reviews are read before they appear here, so nothing is published automatically. Your mail app will open with the review ready to send.</p>' +
+        '<div class="star-picker" role="radiogroup" aria-label="Your rating">' +
+          [1, 2, 3, 4, 5].map(function (n) {
+            return '<button type="button" class="star-pick" role="radio" aria-checked="false" data-value="' + n + '" aria-label="' + n + ' star' + (n === 1 ? '' : 's') + '">★</button>';
+          }).join('') +
+        '</div>' +
+        '<label class="field"><span>Your name (optional)</span><input id="reviewName" type="text" maxlength="40" autocomplete="name"></label>' +
+        '<label class="field"><span>Your review</span><textarea id="reviewText" rows="3" maxlength="600" placeholder="What did you enjoy? What could be better?" required></textarea></label>' +
+        '<button class="btn btn-primary btn-sm" type="submit">Send review</button>' +
+        '<p class="form-note" id="reviewNote" role="status"></p>' +
+      '</form>';
 
     var reviewHtml;
     if (app.reviews && app.reviews.length) {
@@ -192,9 +266,10 @@
               '<p class="note" style="margin-top:0.9rem">A pass does not renew by itself: nothing is charged unless you pay again.</p>' +
             '</section>' : '') +
 
-          '<section class="app-section">' +
+          '<section class="app-section" id="reviews">' +
             '<h2>Ratings and reviews</h2>' +
             reviewHtml +
+            reviewForm +
           '</section>' +
 
           '<section class="app-section">' +
@@ -213,6 +288,7 @@
               '<div><dt>Version</dt><dd>' + esc(app.version) + ' (' + esc(app.versionCode) + ')</dd></div>' +
               '<div><dt>Price</dt><dd>' + esc(app.price) + '</dd></div>' +
               '<div><dt>Updated</dt><dd>' + esc(app.released) + '</dd></div>' +
+              '<div><dt>Downloads</dt><dd><span class="dl-count" data-dl="' + esc(app.id) + '">—</span></dd></div>' +
             '</dl>' +
             '<details class="verify" style="margin-top:1rem">' +
               '<summary>Verify download</summary>' +
@@ -265,6 +341,49 @@
         }
       });
     }
+
+    var reviewFormEl = $('#reviewForm');
+    if (reviewFormEl) {
+      var chosen = 0;
+      var picks = $$('.star-pick', reviewFormEl);
+      picks.forEach(function (b) {
+        b.addEventListener('click', function () {
+          chosen = Number(b.getAttribute('data-value'));
+          picks.forEach(function (x) {
+            x.classList.toggle('on', Number(x.getAttribute('data-value')) <= chosen);
+            x.setAttribute('aria-checked', x === b ? 'true' : 'false');
+          });
+        });
+      });
+      reviewFormEl.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var note = $('#reviewNote', reviewFormEl);
+        var textEl = $('#reviewText', reviewFormEl);
+        var text = textEl.value.trim();
+        if (!chosen) { note.textContent = 'Pick a star rating first.'; return; }
+        if (text.length < 10) { note.textContent = 'Add a sentence or two so the review is useful.'; textEl.focus(); return; }
+        var name = ($('#reviewName', reviewFormEl).value || 'A player').trim();
+        var subject = 'Review: ' + app.name + ' — ' + chosen + '/5';
+        var body = 'App: ' + app.name + ' ' + app.version + '\nRating: ' + chosen + '/5\nName: ' + name + '\n\n' + text + '\n\nSent from ' + location.href;
+        note.textContent = 'Opening your mail app with the review ready to send.';
+        window.location.href = 'mailto:' + SITE.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      });
+    }
+
+    // The app links to gamenight.html#reviews, but this section is built after
+    // load, so jump to it once it exists. The jump is instant: a smooth scroll
+    // down two screens is slower than the visitor expects from a link.
+    if (location.hash === '#reviews') {
+      setTimeout(function () {
+        var target = document.getElementById('reviews');
+        if (!target) return;
+        var root = document.documentElement;
+        var prev = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        window.scrollTo(0, target.getBoundingClientRect().top + window.pageYOffset);
+        root.style.scrollBehavior = prev;
+      }, 80);
+    }
   }
 
   /* ---------------- shared ---------------- */
@@ -283,4 +402,5 @@
   if (page === 'home') renderHome();
   if (page === 'downloads') renderDownloads();
   if (page === 'app') renderAppPage();
+  fillDownloadCounts();
 })();
