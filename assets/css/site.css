@@ -406,9 +406,6 @@ a.btn:hover { text-decoration: none; }
 .verify summary { font-size: 0.86rem; }
 .verify .sha { margin-top: 0.6rem; }
 
-.changes { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.93rem; }
-.changes li { margin-bottom: 0.45rem; }
-
 /* ---------- reviews ---------- */
 .empty-reviews { background: rgba(255, 255, 255, 0.02); border: 1px dashed var(--line); border-radius: var(--radius); padding: 1.4rem; }
 .empty-reviews p { margin: 0 0 0.7rem; font-size: 0.93rem; }

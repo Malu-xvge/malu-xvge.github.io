@@ -18,18 +18,19 @@ const APPS = [
     status: 'available',
     featured: true,
 
-    version: '1.4.0',
-    versionCode: 10,
+    version: '1.4.1',
+    versionCode: 11,
     released: '14 Nov 2026',
     size: '15.5 MB',
     minAndroid: '7.0',
     price: 'Free',
-    apk: 'https://github.com/Malu-xvge/malu-xvge.github.io/releases/download/gamenight-1.4.0/GameNight-1.4.0.apk',
-    sha256: 'B14F415939F03F629A84EAC57F2CC8AE219312DB4B368D5AB39A0A8A31039E94',
+    apk: 'https://github.com/Malu-xvge/malu-xvge.github.io/releases/download/gamenight-1.4.1/GameNight-1.4.1.apk',
+    sha256: 'D390861926D0ACB82B120559F2EAADDAA280754E901C2592150BEB2F59E8A4B7',
 
-    // The APK is attached to this GitHub release, so the download count comes
-    // straight from GitHub instead of a made-up number.
-    release: { repo: 'Malu-xvge/malu-xvge.github.io', tag: 'gamenight-1.4.0' },
+    // The APK is attached to a GitHub release, so the download count comes
+    // straight from GitHub. All releases with this prefix are added together,
+    // so updating the app does not reset the count to zero.
+    release: { repo: 'Malu-xvge/malu-xvge.github.io', prefix: 'gamenight-' },
 
     // Same build, running as a web app for iPhone/iPad at /play/.
     iphone: {
@@ -65,13 +66,6 @@ const APPS = [
       { name: 'Month', price: 'MK 2,000', note: '30 days' },
       { name: 'Three months', price: 'MK 5,000', note: '90 days' },
       { name: 'Lifetime', price: 'MK 10,000', note: 'Pay once, keep it' }
-    ],
-
-    whatsNew: [
-      'Settings is split into Gameplay and Unlock, so sound, timers and the intro sit apart from points and passes.',
-      'The intro now points to Settings → Unlock when it explains earning and unlocking.',
-      'After a few finished rounds, a one-time card offers to rate GameNight. The same button is in Settings; both open the reviews section on the website.',
-      'No price changes: points still open a category for good, and passes still never renew by themselves.'
     ],
 
     screenshots: [

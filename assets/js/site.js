@@ -41,7 +41,7 @@
     var groups = {};
     targets.forEach(function (el) {
       var app = appById(el.getAttribute('data-dl'));
-      if (!app || !app.release || !app.release.tag) return;
+      if (!app || !app.release || !app.release.prefix) return;
       if (!groups[app.id]) groups[app.id] = { app: app, nodes: [] };
       groups[app.id].nodes.push(el);
     });
@@ -49,7 +49,7 @@
     Object.keys(groups).forEach(function (id) {
       var app = groups[id].app;
       var nodes = groups[id].nodes;
-      var cacheKey = 'alum-dl:' + app.release.tag;
+      var cacheKey = 'alum-dl:' + app.release.repo + ':' + app.release.prefix;
       var cached = null;
       try { cached = JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch (e) { cached = null; }
 
@@ -66,14 +66,18 @@
         return;
       }
 
-      var url = 'https://api.github.com/repos/' + app.release.repo + '/releases/tags/' + encodeURIComponent(app.release.tag);
+      var url = 'https://api.github.com/repos/' + app.release.repo + '/releases?per_page=100';
       fetch(url, { headers: { Accept: 'application/vnd.github+json' } })
         .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (rel) {
-          if (!rel || !rel.assets) return;
-          var apks = rel.assets.filter(function (a) { return /\.apk$/i.test(a.name || ''); });
-          var list = apks.length ? apks : rel.assets;
-          var count = list.reduce(function (n, a) { return n + (a.download_count || 0); }, 0);
+        .then(function (rels) {
+          if (!Array.isArray(rels)) return;
+          var count = 0;
+          rels.forEach(function (rel) {
+            if (rel.draft || !rel.tag_name || rel.tag_name.indexOf(app.release.prefix) !== 0) return;
+            (rel.assets || []).forEach(function (a) {
+              if (/\.apk$/i.test(a.name || '')) count += (a.download_count || 0);
+            });
+          });
           try {
             localStorage.setItem(cacheKey, JSON.stringify({ at: Date.now(), count: count }));
           } catch (e) { /* storage full or blocked */ }
@@ -270,11 +274,6 @@
             '<h2>Ratings and reviews</h2>' +
             reviewHtml +
             reviewForm +
-          '</section>' +
-
-          '<section class="app-section">' +
-            '<h2>What\'s new in ' + esc(app.version) + '</h2>' +
-            '<ul class="changes">' + (app.whatsNew || []).map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' +
           '</section>' +
         '</div>' +
 

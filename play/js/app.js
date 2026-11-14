@@ -124,6 +124,17 @@ document.getElementById('settingsFabBtn').addEventListener('click', () => {
   showScreen('settingsScreen');
 });
 
+// The settings menu stays short: each entry opens its own screen, so the
+// passes are one tap away instead of below a long scroll.
+document.getElementById('openGameplayBtn').addEventListener('click', () => {
+  renderSettings();
+  showScreen('gameplayScreen');
+});
+document.getElementById('openUnlockBtn').addEventListener('click', () => {
+  renderSettings();
+  showScreen('unlockScreen');
+});
+
 function renderSettings() {
   const soundOn = getSetting('gn_soundEnabled', 'true') === 'true';
   document.getElementById('soundToggleBtn').textContent = soundOn ? 'ON' : 'OFF';
@@ -536,7 +547,7 @@ function renderUnlockBody() {
 function openPasses() {
   closeUnlock();
   renderSettings();
-  showScreen('settingsScreen');
+  showScreen('unlockScreen');
   const grid = document.getElementById('passOptions');
   if (grid) setTimeout(() => grid.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
 }

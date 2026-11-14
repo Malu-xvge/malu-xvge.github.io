@@ -190,7 +190,7 @@ const Music = (() => {
 })();
 
 // Music plays in the intro and on the menus, and stops while a game is being played
-const MUSIC_SCREENS = ['homeScreen', 'categoryScreen', 'settingsScreen'];
+const MUSIC_SCREENS = ['homeScreen', 'categoryScreen', 'settingsScreen', 'gameplayScreen', 'unlockScreen'];
 function updateMusic(screenId) {
   Music.setWanted(introOpen || MUSIC_SCREENS.includes(screenId));
 }
