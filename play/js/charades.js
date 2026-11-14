@@ -71,7 +71,7 @@ const charadesCategories = {
     "Tamia Ja",
     "Riccoh Mpinganjira",
     "Its Shipmark",
-    "Voodo Streams",
+    "Voodoo Streams",
     "MC Gome ",
     "Kamodza",
     "Prophet Habakkuk",

@@ -208,16 +208,23 @@ p { margin: 0 0 1rem; }
 .shots::-webkit-scrollbar { height: 8px; }
 .shots::-webkit-scrollbar-thumb { background: rgba(230, 188, 85, 0.25); border-radius: 8px; }
 
-/* Landscape captures: one per row at the full width of the column, so the
-   wide screen stays readable instead of shrinking to a sliver. */
-.shots-wide { display: grid; gap: 1rem; margin: 0 0 1.2rem; }
-.shots-wide a { display: block; }
+/* Landscape captures: one scrollable row, wide enough to read the card,
+   with the next shot peeking in so it is obvious you can swipe. */
+.shots-wide {
+  display: flex; gap: 1rem;
+  overflow-x: auto; padding: 0.3rem 0 1rem;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  margin: 0 0 0.4rem;
+}
+.shots-wide a { flex: 0 0 auto; scroll-snap-align: start; display: block; width: min(88%, 540px); }
 .shots-wide img {
   width: 100%; height: auto; display: block;
   border-radius: 16px; border: 1px solid var(--line);
   box-shadow: 0 16px 36px -20px #000;
   background: #000;
 }
+.shots-wide::-webkit-scrollbar { height: 8px; }
+.shots-wide::-webkit-scrollbar-thumb { background: rgba(230, 188, 85, 0.25); border-radius: 8px; }
 
 /* ---------- install steps ---------- */
 .steps { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); counter-reset: step; }

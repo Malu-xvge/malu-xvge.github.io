@@ -70,10 +70,14 @@ const APPS = [
 
     screenshots: [
       { src: 'assets/img/shots/home.jpg', alt: 'GameNight home screen with the six game tiles' },
-      { src: 'assets/img/shots/trivia.jpg', alt: 'A trivia question with four answers, in landscape', wide: true },
+      { src: 'assets/img/shots/apa-chisepo-hut.jpg', alt: 'Apa Ndipati: Chisepo Hut on the Mulanje Massif' },
       { src: 'assets/img/shots/ndagi.jpg', alt: 'A Malawian proverb with its meaning revealed' },
-      { src: 'assets/img/shots/charades.jpg', alt: 'A charades card and the running timer, in landscape', wide: true },
-      { src: 'assets/img/shots/results.jpg', alt: 'End of round score screen' }
+      { src: 'assets/img/shots/apa-parliament-zomba.jpg', alt: 'Apa Ndipati: the Old Parliament Building in Zomba' },
+      { src: 'assets/img/shots/results.jpg', alt: 'End of round score screen' },
+      { src: 'assets/img/shots/charades-eli-njuchi.jpg', alt: 'Charades card reading Eli Njuchi, in landscape', wide: true },
+      { src: 'assets/img/shots/charades-driemo.jpg', alt: 'Charades card reading Driemo, in landscape', wide: true },
+      { src: 'assets/img/shots/charades-noel-lifa.jpg', alt: 'Charades card reading Noel Stern Lifa, in landscape', wide: true },
+      { src: 'assets/img/shots/charades-voodoo-streams.jpg', alt: 'Charades card reading Voodoo Streams, in landscape', wide: true }
     ]
   }
 ];
