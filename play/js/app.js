@@ -803,6 +803,7 @@ const categoryMeta = {
   "Famous Faces": { icon: "🌟", sub: "Icons everyone knows" },
   "Landmarks": { icon: "🗽", sub: "Famous places to act out" },
   "Science in Action": { icon: "🧪", sub: "Processes & discoveries" },
+  "World Class Athletes": { icon: "🏅", sub: "Sporting legends" },
   "Malawi Proverbs": { icon: "📜", sub: "Miyambi ya makolo" },
   "Asian Proverbs": { icon: "🏮", sub: "Wise sayings from Asia" },
   "World & General": { icon: "🌍", sub: "Animals, actions & more" },
@@ -868,7 +869,7 @@ function catSlug(name) {
 const CHARADES_OWN_ART = new Set([
   'custom-charades', 'famous-faces', 'malawian-geography', 'malawian-history',
   'malawian-influencers', 'malawian-politics', 'malawian-showbiz', 'pop-culture',
-  'world-and-general'
+  'world-and-general', 'world-class-athletes'
 ]);
 
 function cardArt(mode, cat) {
