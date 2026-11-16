@@ -18,14 +18,14 @@ const APPS = [
     status: 'available',
     featured: true,
 
-    version: '1.4.1',
-    versionCode: 11,
-    released: '14 Nov 2026',
-    size: '15.5 MB',
+    version: '1.5.0',
+    versionCode: 12,
+    released: '16 Nov 2026',
+    size: '19.9 MB',
     minAndroid: '7.0',
     price: 'Free',
-    apk: 'https://github.com/Malu-xvge/malu-xvge.github.io/releases/download/gamenight-1.4.1/GameNight-1.4.1.apk',
-    sha256: 'D390861926D0ACB82B120559F2EAADDAA280754E901C2592150BEB2F59E8A4B7',
+    apk: 'https://github.com/Malu-xvge/malu-xvge.github.io/releases/download/gamenight-1.5.0/GameNight-1.5.0.apk',
+    sha256: '398427CE73C8C4901B8F11E6E8411742B8714C26C7DF4D2B43BCE2585EC4BA12',
 
     // The APK is attached to a GitHub release, so the download count comes
     // straight from GitHub. All releases with this prefix are added together,
@@ -35,7 +35,7 @@ const APPS = [
     // Same build, running as a web app for iPhone/iPad at /play/.
     iphone: {
       url: 'play/',
-      size: '11 MB',
+      size: '16 MB',
       label: 'Play on iPhone'
     },
 
