@@ -218,13 +218,16 @@ const INTRO_IMAGES = {
 const INTRO_SLIDES = [
   { t: 'Welcome to GameNight', d: 'Party games rooted in Malawian culture. Gather your friends and let the fun begin.', img: INTRO_IMAGES.welcome, art: sceneFriends },
   { t: 'Six Ways to Play', d: 'Quiz each other, act it out, take a dare, solve riddles or guess places across Malawi.', img: INTRO_IMAGES.modes, art: sceneForehead },
-  { t: 'Earn and Unlock', d: 'Every right answer earns 1 point. Open Settings and tap Unlock to spend points on a category for good, or get a pass that opens everything for a day, a month or longer.', img: INTRO_IMAGES.points, art: () => HOWTO_ART.star },
+  { t: 'Earn and Unlock', d: 'Every right answer earns 1 point. Open Settings and tap Unlock to spend points on a category for a month, or get a pass that opens everything for a day, a month or longer.', img: INTRO_IMAGES.points, art: () => HOWTO_ART.star },
   { t: 'How to Play', d: 'Tap the i button when you pick a category in any game — it shows a step-by-step guide to that game.', img: INTRO_IMAGES.help, art: () => HOWTO_ART.grid6 },
+  { t: 'Make Your Own', d: 'Open Charades and pick Custom Charades to write your own prompts — 3 to 20 of them, with a timer from none at all up to 60 seconds. Your first two custom rounds are free.', art: sceneForehead },
   { t: "Let's Play!", d: 'Pick a game master for Trivia and pass the phone around for Charades. Have fun! You can replay this intro any time in Settings.', img: INTRO_IMAGES.play, art: sceneCelebrate }
 ];
 let introOpen = false;
 let introStep = 0;
 let introTimer = null;
+// Set when the player replays the intro from Settings, so the test drive runs again too.
+let introReplayWanted = false;
 
 function renderIntroArt(sl) {
   const box = document.getElementById('introArt');
@@ -286,6 +289,8 @@ function finishIntro() {
   const current = (typeof screenHistory !== 'undefined' && screenHistory[screenHistory.length - 1]) || 'homeScreen';
   updateMusic(current);
   if (typeof flushGiftToast === 'function') setTimeout(flushGiftToast, 700);
+  // The test drive waits for the intro to finish closing.
+  if (typeof Tester !== 'undefined' && Tester.shouldRun()) setTimeout(() => Tester.start(), 750);
 }
 
 document.getElementById('introNextBtn').addEventListener('click', () => {
@@ -298,7 +303,10 @@ document.getElementById('introSkipBtn').addEventListener('click', finishIntro);
 // Settings -> "Watch the intro again": straight to the slides, no splash.
 const replayIntroBtn = document.getElementById('replayIntroBtn');
 if (replayIntroBtn) replayIntroBtn.addEventListener('click', () => {
-  if (!introOpen) startIntro(true);
+  if (!introOpen) {
+    introReplayWanted = true;
+    startIntro(true);
+  }
 });
 
 if (getSetting('gn_intro', '') !== '1') {

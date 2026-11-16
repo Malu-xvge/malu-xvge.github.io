@@ -417,16 +417,36 @@ function showPointsToast(text) {
   showPointsToast.timer = setTimeout(() => t.classList.remove('show'), 1400);
 }
 
+// Points unlocks are stored as { "mode::cat": expiresAtMs }. A points unlock
+// runs for UNLOCK_CONFIG.unlockDays (one month), then the category locks again.
+function unlockDaysMs() {
+  return Math.max(1, Number(UNLOCK_CONFIG.unlockDays) || 30) * 86400000;
+}
+
+function getUnlockedMap() {
+  let raw = null;
+  try { raw = JSON.parse(getSetting('gn_unlocked', '{}')); } catch (e) { raw = null; }
+  // Older copies stored a plain list with no expiry; give those one month from now.
+  if (Array.isArray(raw)) {
+    const map = {};
+    const until = Date.now() + unlockDaysMs();
+    raw.forEach((k) => { map[k] = until; });
+    setSetting('gn_unlocked', JSON.stringify(map));
+    return map;
+  }
+  return raw && typeof raw === 'object' ? raw : {};
+}
+
 function getUnlockedList() {
-  try { return JSON.parse(getSetting('gn_unlocked', '[]')) || []; } catch (e) { return []; }
+  const map = getUnlockedMap();
+  const now = Date.now();
+  return Object.keys(map).filter((k) => (Number(map[k]) || 0) > now);
 }
 
 function addUnlocked(key) {
-  const list = getUnlockedList();
-  if (!list.includes(key)) {
-    list.push(key);
-    setSetting('gn_unlocked', JSON.stringify(list));
-  }
+  const map = getUnlockedMap();
+  map[key] = Date.now() + unlockDaysMs();
+  setSetting('gn_unlocked', JSON.stringify(map));
 }
 
 function tierOf(mode, cat) {
@@ -533,6 +553,7 @@ function renderUnlockBody() {
     <p class="unlock-price"><strong>${fmtNum(info.points)} points</strong></p>
     <div class="unlock-progress"><div style="width:${pct}%"></div></div>
     <p class="unlock-have">You have ${fmtNum(have)} of ${fmtNum(info.points)} points</p>
+    <p class="unlock-note">Points open it for one month, then it locks again.</p>
     <button id="unlockPointsBtn" class="unlock-secondary" ${enough ? '' : 'disabled'}>
       ${enough ? 'Unlock with points' : 'Unlock with points (' + fmtNum(info.points - have) + ' to go)'}
     </button>
@@ -571,7 +592,7 @@ function updatePassUI() {
   if (status) {
     if (lifetime) status.textContent = 'Everything is unlocked for good.';
     else if (pass) status.textContent = 'Everything is open until ' + new Date(pass.until).toLocaleDateString() + ', ' + new Date(pass.until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '.';
-    else status.textContent = 'Everything is locked for now. Earn points to open a category for good, or buy a pass below.';
+    else status.textContent = 'Everything is locked for now. Earn points to open a category for a month, or buy a pass below.';
   }
   if (grid) {
     grid.querySelectorAll('[data-pass]').forEach((btn) => {
@@ -704,7 +725,7 @@ function grantPaidUnlock(itemId) {
   }
   const pass = passById(itemId);
   if (pass) { applyPass(itemId, pass.days); return; }
-  // A category bought before passes existed stays unlocked for good.
+  // A category bought before passes existed: give it the same one-month run.
   addUnlocked(itemId);
   refreshHomeLocks();
   updatePassUI();
@@ -769,6 +790,7 @@ if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App
 
 // --- Category Selection ---
 const categoryMeta = {
+  "Malawian Influencers": { icon: "⭐", sub: "Trendsetters" },
   "Malawian Showbiz": { icon: "🎤", sub: "Music, dance & entertainment" },
   "Malawian History": { icon: "🏛️", sub: "Independence & heritage" },
   "Malawian Geography": { icon: "🗺️", sub: "Lakes, mountains & places" },
@@ -833,6 +855,15 @@ function categoryLabel(cat) {
   return CATEGORY_LABELS[cat] || cat;
 }
 
+// File-name safe version of a category name, used for its card backdrop.
+function catSlug(name) {
+  return String(name || '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function orderedCategories(mode, source) {
   const keys = Object.keys(source || {});
   if (mode !== 'ndagi') return keys;
@@ -850,7 +881,11 @@ function showCategoryScreen(mode) {
     source = triviaCategories;
     title = 'Trivia — Select Category';
   } else if (mode === 'charades') {
-    categories = Object.keys(charadesCategories);
+    // Influencers opens the deck list; Custom Charades sits in the fourth slot.
+    const all = Object.keys(charadesCategories);
+    categories = all.filter((c) => c === 'Malawian Influencers')
+      .concat(all.filter((c) => c !== 'Malawian Influencers'));
+    if (typeof customSub === 'function') categories.splice(3, 0, 'Custom Charades');
     source = charadesCategories;
     title = 'Charades — Select Category';
     } else if (mode === 'dares') {
@@ -865,17 +900,24 @@ function showCategoryScreen(mode) {
 
   screen.innerHTML = `
     <h2>${title}</h2>
-    <div class="deck-grid">
+    <div class="deck-carousel" id="deckCarousel">
       ${categories.map((cat, i) => {
-        const meta = getCategoryMeta(cat, source && Array.isArray(source[cat]) ? source[cat].length : 0);
-        const locked = !isUnlocked(mode, cat);
+        const isCustom = cat === 'Custom Charades';
+        const meta = isCustom
+          ? { sub: customSub() }
+          : getCategoryMeta(cat, source && Array.isArray(source[cat]) ? source[cat].length : 0);
+        const locked = !isCustom && !isUnlocked(mode, cat);
         const featured = mode === 'ndagi' && i === 0;
         return `
-          <div class="deck-card cat-deck-${(i % 7) + 1}${locked ? ' locked' : ''}${featured ? ' deck-featured' : ''}" data-cat="${cat}">
-            <div class="deck-badge"><span class="deck-icon">${meta.icon}</span></div>
-            <span class="deck-title">${categoryLabel(cat)}</span>
+          <div class="deck-card carousel-card cat-deck-${(i % 7) + 1}${locked ? ' locked' : ''}${featured ? ' deck-featured' : ''}${isCustom ? ' deck-custom' : ''}" data-cat="${cat}">
+            <span class="deck-art" style="background-image:url('assets/img/cats/${catSlug(cat)}.jpg')">
+              <span class="deck-art-tint"></span>
+            </span>
+            <span class="deck-caption">
+              <span class="deck-title">${categoryLabel(cat)}</span>
+              ${locked ? lockTag(mode, cat) : ''}
+            </span>
             <span class="deck-sub">${meta.sub}</span>
-            ${locked ? lockTag(mode, cat) : ''}
           </div>
         `;
       }).join('')}
@@ -883,10 +925,54 @@ function showCategoryScreen(mode) {
     <button class="backBtn">Back</button>
   `;
 
+  // PS4-style carousel: the card nearest the middle is the one in focus, and the
+  // old-iPod trick: side cards lean in towards the middle as you scroll past.
+  const carousel = screen.querySelector('#deckCarousel');
+  if (carousel) {
+    const cards = Array.from(carousel.querySelectorAll('.carousel-card'));
+    const markActive = () => {
+      const cs = getComputedStyle(carousel);
+      const padL = parseFloat(cs.paddingLeft) || 0;
+      const gap = parseFloat(cs.columnGap) || 0;
+      const w = cards.length ? cards[0].offsetWidth : 0;
+      const step = w + gap || 1;
+      const mid = carousel.scrollLeft + carousel.clientWidth / 2;
+      let best = 0;
+      let bestGap = Infinity;
+      cards.forEach((c, i) => {
+        const raw = (padL + i * step + w / 2 - mid) / step;
+        const abs = Math.abs(raw);
+        if (abs < bestGap) { bestGap = abs; best = i; }
+        // Clamp so far-away cards keep the same lean as the first neighbour.
+        const d = Math.max(-1, Math.min(1, raw));
+        c.style.transform = `rotateY(${(-d * 20).toFixed(2)}deg) scale(${(1 - 0.16 * Math.abs(d)).toFixed(3)})`;
+        c.style.opacity = (1 - 0.5 * Math.abs(d)).toFixed(3);
+      });
+      cards.forEach((c, i) => c.classList.toggle('active', i === best));
+    };
+    carousel.addEventListener('scroll', () => {
+      if (carousel._raf) return;
+      carousel._raf = requestAnimationFrame(() => { carousel._raf = null; markActive(); });
+    }, { passive: true });
+    window.addEventListener('resize', markActive);
+    requestAnimationFrame(markActive);
+  }
+
   screen.querySelectorAll('.deck-card').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const cat = e.currentTarget.dataset.cat;
+      // A card that is still off to the side just slides into the middle first.
+      if (e.currentTarget.classList.contains('carousel-card') && !e.currentTarget.classList.contains('active')) {
+        const rail = e.currentTarget.closest('.deck-carousel');
+        if (rail) {
+          const rb = rail.getBoundingClientRect();
+          const cb = e.currentTarget.getBoundingClientRect();
+          rail.scrollTo({ left: rail.scrollLeft + (cb.left + cb.width / 2) - (rb.left + rb.width / 2), behavior: 'smooth' });
+        }
+        return;
+      }
       playClick();
+      if (mode === 'charades' && cat === 'Custom Charades') { openCustomCharades(); return; }
       if (!isUnlocked(mode, cat)) {
         openUnlock({ kind: 'category', mode, cat });
         return;
@@ -899,6 +985,7 @@ function showCategoryScreen(mode) {
   });
 
   screen.classList.toggle('cat-few', categories.length <= 6);
+  screen.classList.add('cat-carousel');
   screen.querySelector('.backBtn').addEventListener('click', () => goBack());
   showScreen('categoryScreen');
 }
@@ -1048,6 +1135,7 @@ function checkAnswer(chosen) {
     playCorrect();
     awardPoints('trivia');
     vibrateShort();
+    if (typeof Celebrations !== 'undefined') Celebrations.correct();
     buttons[chosen].style.outline = '4px solid #2E7D32';
     feedback.innerHTML = `
       <p class="feedback-text" style="color:#43A047;">Nice one! 🔥</p>
@@ -1058,6 +1146,7 @@ function checkAnswer(chosen) {
     triviaStreak = 0;
     playWrong();
     vibrateMedium();
+    if (typeof Celebrations !== 'undefined') Celebrations.wrong();
     buttons[chosen].style.outline = '4px solid #B71C1C';
     if (correctIdx >= 0) buttons[correctIdx].style.outline = '4px solid #2E7D32';
     feedback.innerHTML = `<p class="feedback-text" style="color:#E53935;">So close! 😅</p>`;
@@ -1087,6 +1176,7 @@ function endTrivia() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  if (typeof Celebrations !== 'undefined') Celebrations.round(screen, score, answered, 'trivia');
   addReviewPrompt(screen);
 }
 
@@ -1109,6 +1199,8 @@ let charadesAdvancePending = false; // the card was answered just before pausing
 let tiltListenerActive = false;
 let charadesTouchStartY = 0;
 let charadesTouchListenersAttached = false;
+// Set by Custom Charades before a round starts: 0 means no timer at all.
+let customCharadesTimer = null;
 
 function startCharades(category) {
   charadesSession++;
@@ -1122,8 +1214,11 @@ function startCharades(category) {
   charadesStreak = 0;
   charadesCorrectWords = [];
   charadesWrongWords = [];
-  charadesTotalTime = parseInt(getSetting('gn_charadesTimer', '60'));
+  charadesTotalTime = (customCharadesTimer === null)
+    ? parseInt(getSetting('gn_charadesTimer', '60'))
+    : customCharadesTimer;
   timeLeft = charadesTotalTime;
+  customCharadesTimer = null;
   lockLandscape();
   attachCharadesTouchListeners();
   nextPrompt();
@@ -1151,6 +1246,12 @@ function attachCharadesTouchListeners() {
 
 function startTimer() {
   clearInterval(charadesTimer);
+  // A custom round can run with no clock at all.
+  if (charadesTotalTime <= 0) {
+    const el = document.getElementById('charadesTimer');
+    if (el) el.textContent = '∞';
+    return;
+  }
   charadesTimer = setInterval(() => {
     timeLeft--;
     const timerEl = document.getElementById('charadesTimer');
@@ -1189,7 +1290,7 @@ function renderCharades() {
 
   contentArea.innerHTML = `
     <div class="charades-topbar">
-      <span id="charadesTimer" class="charades-timer">${timeLeft}s</span>
+      <span id="charadesTimer" class="charades-timer">${charadesTotalTime > 0 ? timeLeft + 's' : '∞'}</span>
       <span id="charadesFinishBtn" class="charades-finish">Finish</span>
     </div>
     <p class="streak-text charades-streak${charadesStreak > 1 ? '' : ' off'}">🔥 ${charadesStreak > 1 ? charadesStreak : 2} STREAK!</p>
@@ -1442,6 +1543,7 @@ function endCharades() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  if (typeof Celebrations !== 'undefined') Celebrations.round(screen, correct.length, correct.length + wrong.length, 'charades');
   addReviewPrompt(screen);
 }
 
@@ -1511,6 +1613,7 @@ function renderDare(dare) {
 // --- Quick Challenge Game Logic (Brady-style rapid fire) ---
 let quickPool = [];
 let quickScore = 0;
+let quickAnswered = 0;
 let quickTimer = null;
 let quickTimeLeft = 45;
 let currentQuick = null;
@@ -1519,6 +1622,7 @@ function startQuickChallenge() {
   clearTimeout(quickAdvanceTimeout);
   quickPool = [...quickChallengeQuestions];
   quickScore = 0;
+  quickAnswered = 0;
   quickTimeLeft = parseInt(getSetting('gn_quickTimer', '45'));
   nextQuick();
   startQuickTimer();
@@ -1615,6 +1719,7 @@ function renderQuick() {
     btn.addEventListener('click', () => {
       if (quickLocked) return;
       quickLocked = true;
+      quickAnswered++;
       const correct = choices[i] === currentQuick.a;
       markChoices(buttons, choices, i, currentQuick.a);
       if (correct) {
@@ -1622,9 +1727,11 @@ function renderQuick() {
         playCorrect();
         awardPoints('quick', true);
         vibrateShort();
+        if (typeof Celebrations !== 'undefined') Celebrations.correct();
       } else {
         playWrong();
         vibrateMedium();
+        if (typeof Celebrations !== 'undefined') Celebrations.wrong();
       }
       quickAdvanceTimeout = setTimeout(() => {
         if (quickTimeLeft > 0) nextQuick();
@@ -1655,6 +1762,7 @@ function endQuickChallenge() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  if (typeof Celebrations !== 'undefined') Celebrations.round(screen, quickScore, quickAnswered, 'quick');
   addReviewPrompt(screen);
 }
 
@@ -1759,9 +1867,11 @@ function renderApa() {
         playCorrect();
         awardPoints('apa');
         vibrateShort();
+        if (typeof Celebrations !== 'undefined') Celebrations.correct();
       } else {
         playWrong();
         vibrateMedium();
+        if (typeof Celebrations !== 'undefined') Celebrations.wrong();
       }
       const reveal = document.getElementById('apaReveal');
       reveal.innerHTML = `
@@ -1810,6 +1920,7 @@ function endApa() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  if (typeof Celebrations !== 'undefined') Celebrations.round(screen, apaScore, total, 'apa');
   addReviewPrompt(screen);
 }
 
@@ -1896,9 +2007,11 @@ function renderProverb() {
         playCorrect();
         awardPoints('ndagi');
         vibrateShort();
+        if (typeof Celebrations !== 'undefined') Celebrations.correct();
       } else {
         playWrong();
         vibrateMedium();
+        if (typeof Celebrations !== 'undefined') Celebrations.wrong();
       }
       const reveal = document.getElementById('proverbReveal');
       reveal.innerHTML = `
@@ -1963,11 +2076,13 @@ function renderNdagi() {
         playCorrect();
         awardPoints('ndagi');
         vibrateShort();
+        if (typeof Celebrations !== 'undefined') Celebrations.correct();
       } else {
         feedback.textContent = '❌ The answer is: ' + currentNdagi.answer;
         feedback.style.color = '#FF8A80';
         playWrong();
         vibrateMedium();
+        if (typeof Celebrations !== 'undefined') Celebrations.wrong();
       }
       document.getElementById('ndagiNextBtn').style.display = 'inline-block';
     });
@@ -2011,6 +2126,7 @@ function endNdagi() {
     screenHistory = ['homeScreen'];
     showScreen('homeScreen', true);
   });
+  if (typeof Celebrations !== 'undefined') Celebrations.round(screen, ndagiScore, answered, 'ndagi');
   addReviewPrompt(screen);
 }
 

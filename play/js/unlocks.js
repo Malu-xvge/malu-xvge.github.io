@@ -1,8 +1,9 @@
 // GameNight points and unlock settings.
 // Edit the numbers below, or move a category between tiers, without touching anything else.
 // Any category that is not listed here is FREE.
-// Locked categories open with POINTS, permanently. Cash does not buy a single category:
-// it buys a PASS that opens everything until it ends, or a lifetime unlock.
+// Locked categories open with POINTS for one month (unlockDays below), then they lock again.
+// Cash does not buy a single category: it buys a PASS that opens everything until it ends,
+// or a lifetime unlock.
 //   locked category: 200 points   (Ndagi categories: 100 points)
 //   day pass MK 500 (24 h) | 30-day MK 2,000 | 90-day MK 5,000 | lifetime MK 10,000
 const UNLOCK_CONFIG = {
@@ -12,6 +13,8 @@ const UNLOCK_CONFIG = {
   standard: { points: 200 },
   premium: { points: 200 },
   pointsByMode: { ndagi: 100 },                         // overrides the tier points for these modes
+  unlockDays: 30,                                       // a points unlock lasts this long, then locks again
+  customFreeRounds: 2,                                  // Custom Charades rounds that need no pass
   passGraceHours: 12,                                   // a pass keeps working this long after it ends
   paymentApiBase: 'https://gamenight-payments.onrender.com', // public HTTPS URL of server/ (no trailing slash)
   paymentsEnabled: true,                                // true only after paymentApiBase is deployed
@@ -29,7 +32,9 @@ const UNLOCK_CONFIG = {
     trivia:   { 'World Trivia': 'premium', 'Malawian Politics': 'premium', 'Film, Music & Pop Culture': 'premium',
                 'Science & Nature': 'standard', 'Books, Language & General Knowledge': 'standard' },
     charades: { 'Malawian History': 'premium', 'Malawian Geography': 'premium', 'Famous Faces': 'premium', 'Movies & Pop Culture': 'premium',
-                'Malawian Politics': 'standard', 'Landmarks & Wonders': 'standard', 'Science in Action': 'standard' },
+                'Malawian Politics': 'standard', 'Landmarks & Wonders': 'standard', 'Science in Action': 'standard',
+                // Dream Team: Influencers is free, so Showbiz is the deck that locks.
+                'Malawian Showbiz': 'standard' },
     dares:    { 'Spicy': 'premium' },
     // Malawian Proverbs is free and featured first. Authentic Malawian starts locked.
     ndagi:    { 'Authentic Malawian': 'standard', 'European': 'standard', 'Asian Proverbs': 'standard' }
