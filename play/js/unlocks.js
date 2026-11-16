@@ -29,10 +29,10 @@ const UNLOCK_CONFIG = {
   ],
 
   tiers: {
-    trivia:   { 'World Trivia': 'premium', 'Malawian Politics': 'premium', 'Film, Music & Pop Culture': 'premium',
-                'Science & Nature': 'standard', 'Books, Language & General Knowledge': 'standard' },
-    charades: { 'Malawian History': 'premium', 'Malawian Geography': 'premium', 'Famous Faces': 'premium', 'Movies & Pop Culture': 'premium',
-                'Malawian Politics': 'standard', 'Landmarks & Wonders': 'standard', 'Science in Action': 'standard',
+    trivia:   { 'World Trivia': 'premium', 'Malawian Politics': 'premium', 'Pop Culture': 'premium',
+                'Science & Nature': 'standard', 'General Knowledge': 'standard' },
+    charades: { 'Malawian History': 'premium', 'Malawian Geography': 'premium', 'Famous Faces': 'premium', 'Pop Culture': 'premium',
+                'Malawian Politics': 'standard', 'Landmarks': 'standard', 'Science in Action': 'standard',
                 // Dream Team: Influencers is free, so Showbiz is the deck that locks.
                 'Malawian Showbiz': 'standard' },
     dares:    { 'Spicy': 'premium' },

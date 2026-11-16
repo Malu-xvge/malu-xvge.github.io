@@ -47,7 +47,7 @@
       options: ['Supreme Court of Appeal', 'High Court', 'Industrial Relations Court', 'Magistrate Court'], answer: 0 });
 
     // Pop culture: two Titanic questions -> one
-    setTrivia('Film, Music & Pop Culture', 'played Jack', {
+    setTrivia('Pop Culture', 'played Jack', {
       q: "Which animated film features the song 'Let It Go'?",
       options: ['Moana', 'Frozen', 'Tangled', 'Encanto'], answer: 1 });
 

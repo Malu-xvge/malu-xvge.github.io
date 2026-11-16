@@ -606,7 +606,7 @@ const triviaCategories = {
     {"q":"Which instrument is used to measure atmospheric pressure?","options":["Thermometer","Barometer","Hygrometer","Anemometer"],"answer":1}
   ],
 
-  "Film, Music & Pop Culture": [
+  "Pop Culture": [
     {"q":"Who directed the film 'Titanic' released in 1997?","options":["Steven Spielberg","James Cameron","Christopher Nolan","Ridley Scott"],"answer":1},
     {"q":"Which fictional city is Batman primarily associated with?","options":["Metropolis","Gotham City","Star City","Central City"],"answer":1},
     {"q":"What is the name of the school attended by Harry Potter?","options":["Beauxbatons","Durmstrang","Hogwarts","Ilvermorny"],"answer":2},
@@ -659,7 +659,7 @@ const triviaCategories = {
     {"q":"Which artist released the album '25' featuring the song 'Hello'?","options":["Adele","Beyoncé","Taylor Swift","Sia"],"answer":0}
   ],
 
-  "Books, Language & General Knowledge": [
+  "General Knowledge": [
     {"q":"Who wrote 'Things Fall Apart'?","options":["Ngũgĩ wa Thiong'o","Chinua Achebe","Wole Soyinka","Chimamanda Ngozi Adichie"],"answer":1},
     {"q":"Which language has the most native speakers worldwide?","options":["English","Spanish","Mandarin Chinese","Arabic"],"answer":2},
     {"q":"What is the term for a word that reads the same forwards and backwards?","options":["Anagram","Palindrome","Homonym","Acronym"],"answer":1},

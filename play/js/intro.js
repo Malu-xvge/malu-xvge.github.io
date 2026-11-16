@@ -212,7 +212,8 @@ const INTRO_IMAGES = {
   modes: 'assets/img/intro/intro-modes.jpg',
   points: 'assets/img/intro/intro-points.jpg',
   help: 'assets/img/intro/intro-help.jpg',
-  play: 'assets/img/intro/intro-play.jpg'
+  play: 'assets/img/intro/intro-play.jpg',
+  custom: 'assets/img/intro/intro-custom.jpg'
 };
 
 const INTRO_SLIDES = [
@@ -220,7 +221,7 @@ const INTRO_SLIDES = [
   { t: 'Six Ways to Play', d: 'Quiz each other, act it out, take a dare, solve riddles or guess places across Malawi.', img: INTRO_IMAGES.modes, art: sceneForehead },
   { t: 'Earn and Unlock', d: 'Every right answer earns 1 point. Open Settings and tap Unlock to spend points on a category for a month, or get a pass that opens everything for a day, a month or longer.', img: INTRO_IMAGES.points, art: () => HOWTO_ART.star },
   { t: 'How to Play', d: 'Tap the i button when you pick a category in any game — it shows a step-by-step guide to that game.', img: INTRO_IMAGES.help, art: () => HOWTO_ART.grid6 },
-  { t: 'Make Your Own', d: 'Open Charades and pick Custom Charades to write your own prompts — 3 to 20 of them, with a timer from none at all up to 60 seconds. Your first two custom rounds are free.', art: sceneForehead },
+  { t: 'Make Your Own', d: 'Open Charades and pick Custom Charades to write your own prompts — 3 to 20 of them, with a timer from none at all up to 60 seconds. Your first two custom rounds are free.', img: INTRO_IMAGES.custom, art: sceneForehead },
   { t: "Let's Play!", d: 'Pick a game master for Trivia and pass the phone around for Charades. Have fun! You can replay this intro any time in Settings.', img: INTRO_IMAGES.play, art: sceneCelebrate }
 ];
 let introOpen = false;

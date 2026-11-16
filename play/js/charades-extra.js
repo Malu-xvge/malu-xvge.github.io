@@ -33,7 +33,7 @@ Object.assign(charadesCategories, {
     "A rock star on stage",
     "An astronaut walking on the Moon"
   ],
-  "Landmarks & Wonders": [
+  "Landmarks": [
     "Eiffel Tower",
     "Great Wall of China",
     "Pyramids of Giza",
@@ -97,7 +97,7 @@ Object.assign(charadesCategories, {
     "A bat flying in the dark",
     "A chemical reaction fizzing"
   ],
-  "Movies & Pop Culture": [
+  "Pop Culture": [
     "Titanic",
     "The Lion King",
     "Harry Potter",

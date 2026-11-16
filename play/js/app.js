@@ -798,12 +798,11 @@ const categoryMeta = {
   "World Trivia": { icon: "🌍", sub: "General knowledge" },
   "Sports Trivia": { icon: "⚽", sub: "Football & more" },
   "Science & Nature": { icon: "🔬", sub: "Facts about our world" },
-  "Film, Music & Pop Culture": { icon: "🎬", sub: "Movies, music & pop culture" },
-  "Books, Language & General Knowledge": { icon: "📚", sub: "Books, words & general knowledge" },
+  "Pop Culture": { icon: "🎬", sub: "Movies, music & pop culture" },
+  "General Knowledge": { icon: "📚", sub: "Books, words & general knowledge" },
   "Famous Faces": { icon: "🌟", sub: "Icons everyone knows" },
-  "Landmarks & Wonders": { icon: "🗽", sub: "Famous places to act out" },
+  "Landmarks": { icon: "🗽", sub: "Famous places to act out" },
   "Science in Action": { icon: "🧪", sub: "Processes & discoveries" },
-  "Movies & Pop Culture": { icon: "🍿", sub: "Classic charades favourites" },
   "Malawi Proverbs": { icon: "📜", sub: "Miyambi ya makolo" },
   "Asian Proverbs": { icon: "🏮", sub: "Wise sayings from Asia" },
   "World & General": { icon: "🌍", sub: "Animals, actions & more" },
@@ -864,6 +863,20 @@ function catSlug(name) {
     .replace(/^-+|-+$/g, '');
 }
 
+// Charades has its own painted faces for these decks; every other deck uses the
+// shared art. Landmarks and Science in Action have no charades-only file yet.
+const CHARADES_OWN_ART = new Set([
+  'custom-charades', 'famous-faces', 'malawian-geography', 'malawian-history',
+  'malawian-influencers', 'malawian-politics', 'malawian-showbiz', 'pop-culture',
+  'world-and-general'
+]);
+
+function cardArt(mode, cat) {
+  const slug = catSlug(cat);
+  const own = mode === 'charades' && CHARADES_OWN_ART.has(slug);
+  return own ? `assets/img/cats/charades/${slug}.jpg` : `assets/img/cats/${slug}.jpg`;
+}
+
 function orderedCategories(mode, source) {
   const keys = Object.keys(source || {});
   if (mode !== 'ndagi') return keys;
@@ -910,12 +923,11 @@ function showCategoryScreen(mode) {
         const featured = mode === 'ndagi' && i === 0;
         return `
           <div class="deck-card carousel-card cat-deck-${(i % 7) + 1}${locked ? ' locked' : ''}${featured ? ' deck-featured' : ''}${isCustom ? ' deck-custom' : ''}" data-cat="${cat}">
-            <span class="deck-art" style="background-image:url('assets/img/cats/${catSlug(cat)}.jpg')">
+            <span class="deck-art" style="background-image:url('${cardArt(mode, cat)}')">
               <span class="deck-art-tint"></span>
             </span>
             <span class="deck-caption">
               <span class="deck-title">${categoryLabel(cat)}</span>
-              ${locked ? lockTag(mode, cat) : ''}
             </span>
             <span class="deck-sub">${meta.sub}</span>
           </div>
