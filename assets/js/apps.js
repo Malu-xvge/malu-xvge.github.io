@@ -70,6 +70,7 @@ const APPS = [
 
     screenshots: [
       { src: 'assets/img/shots/home.jpg', alt: 'GameNight home screen with the six game tiles' },
+      { src: 'assets/img/shots/categories.jpg', alt: 'Charades categories, each deck painted, with a gold padlock on the closed ones' },
       { src: 'assets/img/shots/apa-chisepo-hut.jpg', alt: 'Apa Ndipati: Chisepo Hut on the Mulanje Massif' },
       { src: 'assets/img/shots/ndagi.jpg', alt: 'A Malawian proverb with its meaning revealed' },
       { src: 'assets/img/shots/apa-parliament-zomba.jpg', alt: 'Apa Ndipati: the Old Parliament Building in Zomba' },
