@@ -893,6 +893,19 @@ function cardArt(mode, cat) {
   return own ? `assets/img/cats/charades/${slug}.jpg` : `assets/img/cats/${slug}.jpg`;
 }
 
+// A locked deck wears this in its top-right corner: a small gold padlock on a
+// darkened bead, with a single glint so it reads as a charm and not a UI chip.
+const LOCKED_MARK = `
+  <span class="deck-lock-mark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <path d="M7 10.4V7.2a5 5 0 0 1 10 0v3.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+      <rect x="4.6" y="10.2" width="14.8" height="10.6" rx="2.6" fill="currentColor"/>
+      <circle cx="12" cy="14.6" r="1.35" fill="#140E06"/>
+      <rect x="11.25" y="15.2" width="1.5" height="3.1" rx="0.75" fill="#140E06"/>
+    </svg>
+    <span class="deck-lock-spark"></span>
+  </span>`;
+
 function orderedCategories(mode, source) {
   const keys = Object.keys(source || {});
   if (mode !== 'ndagi') return keys;
@@ -942,6 +955,7 @@ function showCategoryScreen(mode) {
             <span class="deck-art" style="background-image:url('${cardArt(mode, cat)}')">
               <span class="deck-art-tint"></span>
             </span>
+            ${locked ? LOCKED_MARK : ''}
             <span class="deck-caption">
               <span class="deck-title">${categoryLabel(cat)}</span>
             </span>
