@@ -849,6 +849,21 @@ const NDAGI_CATEGORY_ORDER = [
   'Asian Proverbs'
 ];
 
+// Charades deck order on screen. Any new deck not listed here still shows, at the end.
+const CHARADES_CATEGORY_ORDER = [
+  'Malawian Influencers',
+  'Malawian Showbiz',
+  'Malawian History',
+  'Malawian Geography',
+  'Malawian Politics',
+  'World Class Athletes',
+  'World & General',
+  'Famous Faces',
+  'Landmarks',
+  'Science in Action',
+  'Pop Culture'
+];
+
 // Friendly display names (internal keys stay unchanged so unlocks and data still match).
 const CATEGORY_LABELS = { 'Malawi Proverbs': 'Malawian Proverbs' };
 function categoryLabel(cat) {
@@ -895,10 +910,10 @@ function showCategoryScreen(mode) {
     source = triviaCategories;
     title = 'Trivia — Select Category';
   } else if (mode === 'charades') {
-    // Influencers opens the deck list; Custom Charades sits in the fourth slot.
+    // Deck order is set here, not by the question files. Custom Charades sits in the fourth slot.
     const all = Object.keys(charadesCategories);
-    categories = all.filter((c) => c === 'Malawian Influencers')
-      .concat(all.filter((c) => c !== 'Malawian Influencers'));
+    categories = CHARADES_CATEGORY_ORDER.filter((c) => all.includes(c))
+      .concat(all.filter((c) => !CHARADES_CATEGORY_ORDER.includes(c)));
     if (typeof customSub === 'function') categories.splice(3, 0, 'Custom Charades');
     source = charadesCategories;
     title = 'Charades — Select Category';
