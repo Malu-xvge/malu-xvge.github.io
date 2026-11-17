@@ -1,4 +1,4 @@
-/* ALUM — site styles. Palette matches GameNight. */
+/* ALUMNI — site styles. Palette matches GameNight. */
 @font-face {
   font-family: 'Poppins';
   src: url('../fonts/heading-font.ttf') format('truetype');
@@ -85,6 +85,9 @@ p { margin: 0 0 1rem; }
 .nav nav a { color: var(--muted); }
 .nav nav a:hover { color: var(--gold-bright); text-decoration: none; }
 @media (max-width: 560px) { .nav nav a.hide-sm { display: none; } }
+/* Under 350 px the wordmark plus three links no longer fit on one line:
+   drop Contact (it is in the footer and on the home page) and tighten gaps. */
+@media (max-width: 350px) { .nav nav { gap: 1rem; } .nav nav a.hide-xs { display: none; } }
 
 /* ---------- hero ---------- */
 .hero { padding: clamp(3rem, 8vw, 6rem) 0 clamp(2rem, 5vw, 3.5rem); }

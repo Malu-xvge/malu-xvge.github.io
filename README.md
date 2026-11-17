@@ -1,6 +1,6 @@
-# ALUM — company site
+# ALUMNI Technology — company site
 
-Static site for ALUM, an app studio in Lilongwe. No build step, no framework:
+Static site for ALUMNI Technology, an app studio in Lilongwe. No build step, no framework:
 plain HTML, one stylesheet, two small scripts.
 
 ## Structure

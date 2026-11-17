@@ -1,9 +1,9 @@
-// ALUM site content. One entry per app; add an object and it appears on
+// ALUMNI site content. One entry per app; add an object and it appears on
 // the downloads list automatically.
 
 const SITE = {
-  name: 'ALUM',
-  full: 'ALUM',
+  name: 'ALUMNI Technology',
+  full: 'ALUMNI Technology',
   city: 'Lilongwe, Malawi',
   email: 'alumtech9@gmail.com',
   github: 'https://github.com/Malu-xvge'
